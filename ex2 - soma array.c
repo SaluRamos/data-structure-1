@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//17 de agosto de 2022
+
 int main(void){
     int number_of_vectors = 0;
     int *vector = NULL;

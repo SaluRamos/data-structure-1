@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+//17 de agosto de 2022
+
 int fibonacci(int n){
     if(n < 2){
         return n;
@@ -12,7 +14,7 @@ int fibonacci(int n){
 
 int main(void){
     int n = 0;
-    printf("Digite um numero: ");
+    printf("Informe a posicao do numero da sequencia de fibonacci: ");
     scanf("%d", &n);
     printf("resultado = %d", fibonacci(n));
     return 1;
