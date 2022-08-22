@@ -4,7 +4,7 @@
 
 //22 de agosto de 2022
 
-//retorna o tamanho de um array
+//retorna o tamanho de elementos de um array
 int len(int array[]){
     int total_array_bytes = 0;
     for(int i = 0; i < 5; i++){
@@ -14,7 +14,7 @@ int len(int array[]){
 }
 
 //retorna o index do elemento procurado
-int binary_search(int array[], int target, int start, int end = -1){
+int binary_search(int array[], int target, int start, int end){
     if(end == -1){
         end = len(array) - 1; //define o final da lista
     }
