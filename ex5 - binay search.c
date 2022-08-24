@@ -19,24 +19,34 @@ int * reverseArray(){
     return 0;
 }
 
-def quick_sort(list_to_sort, start = 0, end = None):
-    if end == None:
-        end = len(list_to_sort) - 1
-    if start < end:
-        p = partition(list_to_sort, start, end)
-        quick_sort(list_to_sort = list_to_sort, start = start, end = (p - 1))
-        quick_sort(list_to_sort = list_to_sort, start = (p + 1), end = end)
-    return list_to_sort
+int partition(int* arrayToSort, int start, int end){
+    int pivot = arrayToSort[end];
+    int i = start;
+    for(int j = start; j < end; j++){
+        if(arrayToSort[j] <= pivot){
+            int temp = arrayToSort[j];
+            arrayToSort[j] = arrayToSort[i]; 
+            arrayToSort[i] = temp;
+            i += 1;
+        }
+    }
+    int temp = arrayToSort[i];
+    arrayToSort[i] = arrayToSort[end];
+    arrayToSort[end] = temp;
+    return i;
+}
 
-def partition(list_to_sort, start, end):
-    pivot = list_to_sort[end]
-    i = start
-    for j in range(start, end):
-        if list_to_sort[j] <= pivot:
-            list_to_sort[j], list_to_sort[i] = list_to_sort[i], list_to_sort[j]
-            i += 1
-    list_to_sort[i], list_to_sort[end] = list_to_sort[end], list_to_sort[i]
-    return i
+int * quickSort(int* arrayToSort, int arraySize, int start, int end){
+    if(end == -1){
+        end = arraySize - 1;
+    }
+    if(start < end){
+        int p = partition(arrayToSort, start, end);
+        quick_sort(arrayToSort, start, p - 1);
+        quick_sort(arrayToSort, p + 1, end);
+    }   
+    return arrayToSort;
+}
 
 //retorna o index do elemento procurado
 int binarySearch(int array[], int arraySize, int target, int start, int end){
@@ -69,6 +79,10 @@ int main(void){
         return -1;
     }
     int* vector = createIntArray(arraySize, maxValue, minValue); //precisa estar ordenada
+    vector = quickSort(vector, arraySize, 0, -1);
+    for(int i = 0; i < arraySize; i++){
+        printf("elemento %d = %d", i + 1, vector[i]);
+    }
     // int target = 18;
     // int index = binarySearch(vector, target, 0, -1);
     // printf("index do elemento procurado = %d\n", index);
