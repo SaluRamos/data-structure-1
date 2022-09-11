@@ -107,4 +107,5 @@ int main(void){
             break;
         }
     }while(input != 3);
+    return 1;
 }

@@ -83,4 +83,5 @@ int main(void){
         scanf("%d", &decimalInput);
     }while(decimalInput < 0);
     printf("o binario de %d %c %s", decimalInput, 130, decimalToBinary(decimalInput));
+    return 1;
 }

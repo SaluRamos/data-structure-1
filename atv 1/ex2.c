@@ -66,4 +66,5 @@ int main(void){
     }
     stackAppend(&fibonacciStack, 0);
     printStack(&fibonacciStack);
+    return 1;
 }
