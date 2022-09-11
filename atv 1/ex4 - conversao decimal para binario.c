@@ -7,23 +7,29 @@
 typedef struct{
     int *array;
     int stackSize;
+    int maxSize;
 }stack; //o problema dessa estrutura é que não é possível definir o tipo armazenado nos arrays
 
 stack createStack(int stackLength){
     stack newStack;
     newStack.array = malloc(sizeof(int)*stackLength);
+    newStack.maxSize = stackLength;
     newStack.stackSize = 0;
     return newStack;
 }
 
 void stackAppend(stack* stack_, int value){
-    stack_->array[stack_->stackSize] = value;
-    stack_->stackSize += 1;
+    if(stack_->stackSize < stack_->maxSize){
+        stack_->array[stack_->stackSize] = value;
+        stack_->stackSize += 1;
+    }
 }
 
 void stackPop(stack* stack_){
-    free(stack_->array[stack_->stackSize]);
-    stack_->stackSize -= 1;
+    if(stack_->stackSize > 0){
+        free(stack_->array[stack_->stackSize]);
+        stack_->stackSize -= 1;
+    }
 }
 
 void printStack(stack* stack_){
