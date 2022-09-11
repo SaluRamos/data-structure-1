@@ -10,7 +10,7 @@ typedef struct{
     int array[localMaxPallets];
     int stackSize;
     int maxSize;
-}stack; //o problema dessa estrutura é que não é possível definir o tipo armazenado nos arrays
+}stack;
 
 void stackAppend(stack* stack_, int value){
     if(stack_->stackSize < stack_->maxSize){
@@ -31,18 +31,6 @@ stack createStack(){
     newStack.maxSize = localMaxPallets;
     newStack.stackSize = 0;
     return newStack;
-}
-
-void printStack(stack* stack_){
-    printf("---------------------------------\n");
-    if(stack_->stackSize == 0){
-        printf("esta stack nao possui nenhum elemento\n");
-    }else{
-        for(int i = 0; i < stack_->stackSize; i++){
-            printf("elemento %d = %d\n", i + 1, stack_->array[i]);
-        }
-    }
-    printf("---------------------------------\n\n");
 }
 
 //pallets (para adicionar ou remover deve automaticamente selecionar o local)
