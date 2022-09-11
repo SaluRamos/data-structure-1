@@ -21,5 +21,5 @@ int main(void){
     }
     printf("Soma total = %d", sum);
     free(vector);
-    return 0;
+    return 1;
 }

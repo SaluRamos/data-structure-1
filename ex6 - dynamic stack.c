@@ -49,4 +49,5 @@ int main(void){
     printStack(&myStack);
     stackPop(&myStack);
     printStack(&myStack);
+    return 1;
 }

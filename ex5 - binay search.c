@@ -94,4 +94,5 @@ int main(void){
     scanf("%d", &target);
     int index = binarySearch(vector, arraySize, target, 0, -1);
     printf("index do elemento procurado = %d\n", index);
+    return 1;
 }
