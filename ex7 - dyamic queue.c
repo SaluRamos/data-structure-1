@@ -7,25 +7,31 @@ typedef struct{
     int queueSize;
 } queue;
 
-queue createQueue(int queueSize_){
+queue createQueue(){
     queue newQueue;
-    newQueue.array = malloc(sizeof(int)*queueSize_);
-    newQueue.maxSize = queueSize_;
+    newQueue.array = (int*) malloc(sizeof(int)*1);
+    newQueue.maxSize = 1;
     newQueue.queueSize = 0;
     return newQueue;
 }
 
 void queueAppend(queue *queue_, int newValue){
-    if(queue_->queueSize < queue_->maxSize){
-        queue_->array[queue_->queueSize] = newValue;
-        queue_->queueSize += 1;
+    if(queue_->queueSize + 1 == queue_->maxSize){
+        queue_->array = (int*) realloc(queue_->array, queue_->queueSize + 1);
     }
+    queue_->array[queue_->queueSize] = newValue;
+    queue_->queueSize += 1;
+    queue_->maxSize += 1;
 }
 
 void queuePop(queue *queue_){
     if(queue_->queueSize > 0){
-        free(queue_->array[queue_->queueSize]);
+        for(int i = 0; i < queue_->queueSize - 1; i++){
+            queue_->array[i] = queue_->array[i + 1];
+        }
+        queue_->array = (int*) realloc(queue_->array, queue_->queueSize - 1);
         queue_->queueSize -= 1;
+        queue_->maxSize -= 1;
     }
 }
 
@@ -42,11 +48,13 @@ void printQueueArray(queue *queue_){
 }
 
 int main(void){
-    queue aQueue = createQueue(10);
+    queue aQueue = createQueue();
     printQueueArray(&aQueue);
     queueAppend(&aQueue, 10);
     queueAppend(&aQueue, 20);
+    queueAppend(&aQueue, 30);
     printQueueArray(&aQueue);
     queuePop(&aQueue);
+    printQueueArray(&aQueue);
     return 1;
 }
