@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <math.h>
 
 typedef struct{
     int *array;
@@ -10,28 +11,28 @@ typedef struct{
 queue createQueue(){
     queue newQueue;
     newQueue.array = (int*) malloc(sizeof(int)*1);
-    newQueue.maxSize = 1;
+    newQueue.maxSize = 10;
     newQueue.queueSize = 0;
     return newQueue;
 }
 
 void queueAppend(queue *queue_, int newValue){
     if(queue_->queueSize + 1 == queue_->maxSize){
-        queue_->array = (int*) realloc(queue_->array, queue_->queueSize + 1);
+        queue_->array = (int*) realloc(queue_->array, pow(queue_->maxSize, 2));
     }
     queue_->array[queue_->queueSize] = newValue;
     queue_->queueSize += 1;
-    queue_->maxSize += 1;
 }
 
 void queuePop(queue *queue_){
+    if(queue_->queueSize - 1 < queue_->maxSize/4){
+        queue_->array = (int*) realloc(queue_->array, queue_->maxSize/2);
+    }
     if(queue_->queueSize > 0){
         for(int i = 0; i < queue_->queueSize - 1; i++){
             queue_->array[i] = queue_->array[i + 1];
         }
-        queue_->array = (int*) realloc(queue_->array, queue_->queueSize - 1);
         queue_->queueSize -= 1;
-        queue_->maxSize -= 1;
     }
 }
 
@@ -55,6 +56,7 @@ int main(void){
     queueAppend(&aQueue, 30);
     printQueueArray(&aQueue);
     queuePop(&aQueue);
+    queueAppend(&aQueue, 40);
     printQueueArray(&aQueue);
     return 1;
 }
