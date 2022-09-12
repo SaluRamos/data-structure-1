@@ -1,8 +1,9 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #define baseStackSize 10
 
-//stack dinamica
+//stack estatica
 
 typedef struct{
     int array[baseStackSize];
@@ -31,16 +32,30 @@ stack createStack(){
     return newStack;
 }
 
-int main(int argc, char ** argv){
+//software
+
+int main(int argc, char *argv[]){
     stack pares = createStack();
     stack impares = createStack();
     int input = 0;
     FILE *fInput;
-    fInput = fopen("input.txt", "w+");
-    FILE *fParesInput;
-    fParesInput = fopen("pares.txt", "w+");
-    FILE *fImparesInput;
-    fImparesInput = fopen("impares.txt", "w+");
+    if(argc > 0){
+        fInput = fopen(strcat(argv[1], ".txt"), "w+");
+    }else{
+        fInput = fopen("input.txt", "w+");
+    }
+    FILE *fPares;
+    if(argc > 1){
+        fPares = fopen(strcat(argv[2], ".txt"), "w+");
+    }else{
+        fPares = fopen("pares.txt", "w+");
+    }
+    FILE *fImpares;
+    if(argc > 2){
+        fImpares = fopen(strcat(argv[3], ".txt"), "w+");
+    }else{
+        fImpares = fopen("impares.txt", "w+");
+    }
     for(int i = 0; i < 10; i++){
         printf("Digite o numero %d: ", i + 1);
         scanf("%d", &input);
@@ -51,14 +66,18 @@ int main(int argc, char ** argv){
         }
         fprintf(fInput, "%d\n", input);
     }
+    fprintf(fInput, "\n");
     for(int i = 0; i < pares.stackSize; i++){
-        fprintf(fParesInput, "%d\n", pares.array[i]);
+        fprintf(fInput, "%d\n", pares.array[i]);
+        fprintf(fPares, "%d\n", pares.array[i]);
     }
+    fprintf(fInput, "\n");
     for(int i = 0; i < impares.stackSize; i++){
-        fprintf(fImparesInput, "%d\n", impares.array[i]);
+        fprintf(fInput, "%d\n", impares.array[i]);
+        fprintf(fImpares, "%d\n", impares.array[i]);
     }
     fclose(fInput);
-    fclose(fParesInput);
-    fclose(fImparesInput);
+    fclose(fPares);
+    fclose(fImpares);
     return 1;
 }
