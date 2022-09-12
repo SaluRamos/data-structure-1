@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #define localMaxPallets 4
 #define totalLocals 5
 
@@ -97,7 +96,7 @@ int main(void){
             addPallet(pallets);
             break;
         case 2:
-        removePallet(pallets);
+            removePallet(pallets);
             break;
         case 3:
             printf("at%c a pr%cxima!", 130, 162);

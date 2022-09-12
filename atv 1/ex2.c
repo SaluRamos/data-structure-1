@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+//pilha dinamica
+
 typedef struct{
     int *array;
     int stackSize;
@@ -40,6 +42,8 @@ void printStack(stack* stack_){
     }
     printf("---------------------------------\n");
 }
+
+//exercicio
 
 int fibonacci(int n){
     if(n < 2){

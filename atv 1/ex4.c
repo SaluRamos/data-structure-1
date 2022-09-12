@@ -48,13 +48,11 @@ void printStack(stack* stack_){
 //decimal para binario
 
 char* decimalToBinary(int decimal){
-    stack binaryNumber = createStack(15);
-    int decimalCache = decimal;
+    stack binaryNumber = createStack(ceil(log2(decimal)));
     int restFromDivision = 0;
     while(1){
-        decimal = floor(decimalCache/2); //divide o decimal por 2 e salva o resultado arredondado para baixo
-        restFromDivision = decimalCache%2; //divide o decimal por 2 e salva o resto da divisão
-        decimalCache = decimal; //atualiza o novo decimalCache
+        restFromDivision = decimal%2; //divide o decimal por 2 e salva o resto da divisão
+        decimal = floor(decimal/2); //divide o decimal por 2 e salva o resultado arredondado para baixo
         stackAppend(&binaryNumber, restFromDivision); //adiciona o resto da divisão na pilha
         if(decimal <= 1){ //verifica se o resultado é menor ou igual a 1
             stackAppend(&binaryNumber, decimal); //adiciona o resultado ao final da pilha, concluindo a conversão de decimal para binario
@@ -77,7 +75,7 @@ char* decimalToBinary(int decimal){
 //main
 
 int main(void){
-    int decimalInput = -1;
+    int decimalInput = 0;
     do{
         printf("Digite um numero inteiro nao negativo: ");
         scanf("%d", &decimalInput);
