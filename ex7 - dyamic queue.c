@@ -24,23 +24,29 @@ void queueAppend(queue *queue_, int newValue){
 
 void queuePop(queue *queue_){
     if(queue_->queueSize > 0){
-        queue_->array[queue_->queueSize] = newValue;
-        queue_->queueSize += 1;
+        free(queue_->array[queue_->queueSize]);
+        queue_->queueSize -= 1;
     }
 }
 
 void printQueueArray(queue *queue_){
     printf("-----------------------\n");
-    for(int i = 0; i < N; i++){
-        printf("%d = %d\n", i, queue_->array[i]);
+    if(queue_->queueSize == 0){
+        printf("esta fila nao possui nenhum elemento\n");
+    }else{
+        for(int i = 0; i < queue_->queueSize; i++){
+            printf("elemento %d = %d\n", i + 1, queue_->array[i]);
+        }
     }
     printf("-----------------------\n");
 }
 
 int main(void){
     queue aQueue = createQueue(10);
-    printQueueArray(&test);
-    appendQueue(&test, 10);
-    printQueueArray(&test);
+    printQueueArray(&aQueue);
+    queueAppend(&aQueue, 10);
+    queueAppend(&aQueue, 20);
+    printQueueArray(&aQueue);
+    queuePop(&aQueue);
     return 1;
 }
