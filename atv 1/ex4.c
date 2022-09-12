@@ -47,7 +47,7 @@ void printStack(stack* stack_){
 
 //decimal para binario
 
-char* decimalToBinary(int decimal){
+stack decimalToBinary(int decimal){
     stack binaryNumber = createStack(ceil(log2(decimal)));
     int restFromDivision = 0;
     while(1){
@@ -56,18 +56,20 @@ char* decimalToBinary(int decimal){
         stackAppend(&binaryNumber, restFromDivision); //adiciona o resto da divisão na pilha
         if(decimal <= 1){ //verifica se o resultado é menor ou igual a 1
             stackAppend(&binaryNumber, decimal); //adiciona o resultado ao final da pilha, concluindo a conversão de decimal para binario
-            char *binaryString = malloc(sizeof(char)*(binaryNumber.stackSize + 1)); //faz alocagem da string que vai armazenar o binario
-            int j = 0;
-            for(int i = binaryNumber.stackSize; i > 0; i--){
-                if(binaryNumber.array[i - 1] == 1){
-                    binaryString[j] = '1';
-                }else{
-                    binaryString[j] = '0';
-                }
-                j += 1;
-            }
-            binaryString[j] = '\0';
-            return binaryString;
+            return binaryNumber;
+            //método
+            // char *binaryString = malloc(sizeof(char)*(binaryNumber.stackSize + 1)); //faz alocagem da string que vai armazenar o binario
+            // int j = 0;
+            // for(int i = binaryNumber.stackSize; i > 0; i--){
+            //     if(binaryNumber.array[i - 1] == 1){
+            //         binaryString[j] = '1';
+            //     }else{
+            //         binaryString[j] = '0';
+            //     }
+            //     j += 1;
+            // }
+            // binaryString[j] = '\0';
+            // return binaryString;
         }
     }
 }
@@ -80,6 +82,10 @@ int main(void){
         printf("Digite um numero inteiro nao negativo: ");
         scanf("%d", &decimalInput);
     }while(decimalInput < 0);
-    printf("o binario de %d %c %s", decimalInput, 130, decimalToBinary(decimalInput));
+    printf("o binario de %d %c ", decimalInput, 130);
+    stack binaryNumber = decimalToBinary(decimalInput);
+    for(int i = binaryNumber.stackSize; i > 0; i--){
+        printf("%d", binaryNumber.array[i - 1]);
+    }
     return 1;
 }
