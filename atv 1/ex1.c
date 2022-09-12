@@ -1,3 +1,6 @@
+//Salu Conteratto Ramos, RA 2150352
+//Saulo Gabriel Gomes De Lira Fernando, RA 2104636
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

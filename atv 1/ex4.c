@@ -1,8 +1,11 @@
+//Salu Conteratto Ramos, RA 2150352
+//Saulo Gabriel Gomes De Lira Fernando, RA 2104636
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 
-//stack dinamica
+//implementação básica da stack dinamica
 
 typedef struct{
     int *array;
@@ -57,19 +60,6 @@ stack decimalToBinary(int decimal){
         if(decimal <= 1){ //verifica se o resultado é menor ou igual a 1
             stackAppend(&binaryNumber, decimal); //adiciona o resultado ao final da pilha, concluindo a conversão de decimal para binario
             return binaryNumber;
-            //método
-            // char *binaryString = malloc(sizeof(char)*(binaryNumber.stackSize + 1)); //faz alocagem da string que vai armazenar o binario
-            // int j = 0;
-            // for(int i = binaryNumber.stackSize; i > 0; i--){
-            //     if(binaryNumber.array[i - 1] == 1){
-            //         binaryString[j] = '1';
-            //     }else{
-            //         binaryString[j] = '0';
-            //     }
-            //     j += 1;
-            // }
-            // binaryString[j] = '\0';
-            // return binaryString;
         }
     }
 }

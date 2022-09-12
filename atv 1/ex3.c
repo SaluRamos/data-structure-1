@@ -1,3 +1,6 @@
+//Salu Conteratto Ramos, RA 2150352
+//Saulo Gabriel Gomes De Lira Fernando, RA 2104636
+
 #include <stdio.h>
 #include <stdlib.h>
 #define localMaxPallets 4
