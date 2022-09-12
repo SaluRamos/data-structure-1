@@ -1,5 +1,5 @@
 cls
-gcc "atv 1/ex4.c"
+gcc "ex7 - dyamic queue.c"
 a.exe
 PAUSE
 cls
