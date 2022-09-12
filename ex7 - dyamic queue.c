@@ -18,15 +18,16 @@ queue createQueue(){
 
 void queueAppend(queue *queue_, int newValue){
     if(queue_->queueSize + 1 == queue_->maxSize){
-        queue_->array = (int*) realloc(queue_->array, pow(queue_->maxSize, 2));
+        printf("realocando fila para %d\n", floor(pow(queue_->maxSize, 2)));
+        queue_->array = (int*) realloc(queue_->array, floor(pow(queue_->maxSize, 2)));
     }
     queue_->array[queue_->queueSize] = newValue;
     queue_->queueSize += 1;
 }
 
 void queuePop(queue *queue_){
-    if(queue_->queueSize - 1 < queue_->maxSize/4){
-        queue_->array = (int*) realloc(queue_->array, queue_->maxSize/2);
+    if(queue_->queueSize - 1 <= floor(queue_->maxSize/4)){
+        queue_->array = (int*) realloc(queue_->array, floor(queue_->maxSize/2));
     }
     if(queue_->queueSize > 0){
         for(int i = 0; i < queue_->queueSize - 1; i++){
@@ -38,6 +39,8 @@ void queuePop(queue *queue_){
 
 void printQueueArray(queue *queue_){
     printf("-----------------------\n");
+    printf("tamanho maximo = %d\n", queue_->maxSize);
+    printf("tamanho atual = %d\n", queue_->queueSize);
     if(queue_->queueSize == 0){
         printf("esta fila nao possui nenhum elemento\n");
     }else{
@@ -56,6 +59,14 @@ int main(void){
     queueAppend(&aQueue, 30);
     printQueueArray(&aQueue);
     queuePop(&aQueue);
+    queueAppend(&aQueue, 40);
+    printQueueArray(&aQueue);
+    queueAppend(&aQueue, 40);
+    queueAppend(&aQueue, 40);
+    queueAppend(&aQueue, 40);
+    queueAppend(&aQueue, 40);
+    queueAppend(&aQueue, 40);
+    queueAppend(&aQueue, 40);
     queueAppend(&aQueue, 40);
     printQueueArray(&aQueue);
     return 1;
