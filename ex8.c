@@ -36,6 +36,10 @@ void popList(){
 
 }
 
+void searchlist(){
+    
+}
+
 int main(void){
     list myList = createList();
     return 1;
