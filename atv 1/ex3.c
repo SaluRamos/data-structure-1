@@ -6,28 +6,14 @@
 #define localMaxPallets 4
 #define totalLocals 5
 
-//stack dinamica
-
+//implementação da stack estatica
 typedef struct{
     int array[localMaxPallets];
     int stackSize;
     int maxSize;
 }stack;
 
-void stackAppend(stack* stack_, int value){
-    if(stack_->stackSize < stack_->maxSize){
-        stack_->array[stack_->stackSize] = value;
-        stack_->stackSize += 1;
-    }
-}
-
-void stackPop(stack* stack_){
-    if(stack_->stackSize > 0){
-        free(stack_->array[stack_->stackSize]);
-        stack_->stackSize -= 1;
-    }
-}
-
+//inicializa as variaveis da stack
 stack createStack(){
     stack newStack;
     newStack.maxSize = localMaxPallets;
@@ -35,49 +21,66 @@ stack createStack(){
     return newStack;
 }
 
-//pallets (para adicionar ou remover deve automaticamente selecionar o local)
+//adiciona um elemento em cima da stack
+void stackAppend(stack* stack_, int value){
+    if(stack_->stackSize < stack_->maxSize){
+        stack_->array[stack_->stackSize] = value;
+        stack_->stackSize += 1;
+    }
+}
 
+//remove o elemento de cima da stack
+void stackPop(stack* stack_){
+    if(stack_->stackSize > 0){
+        // free(stack_->array[stack_->atualSize]); //em C não é possível liberar a memoria de um único elemento de um array, pois o array ocupa a memoria "em conjunto" (este espaço deve permanecer disponível para futuras alocagens, se não ficar disponivel, como o array vai alocar suas variaveis?)
+        stack_->stackSize -= 1;
+    }
+}
+
+//imprime quantidade de pallets dos 5 locais gerenciados
 void printPallets(stack* pallets){
     for(int i = 0; i < totalLocals; i++){
         printf("local %d = %d pallet(s)\n", i + 1, pallets[i].stackSize);
     }
 }
 
+//adiciona pallet no primeiro local com menos pallets
 void addPallet(stack* pallets){
-    int localWithLessPallets = -1;
-    int palletsOfLocalWithLessPallets = localMaxPallets;
-    for(int i = 0; i < totalLocals; i++){
+    int localWithLessPallets = -1; //variavel para armazenar o local com menos pallets
+    int palletsOfLocalWithLessPallets = localMaxPallets; //variavel para armazenar quantos pallets possui o local com menos pallets
+    for(int i = 0; i < totalLocals; i++){ //procura pelo local com menos pallets
         if(palletsOfLocalWithLessPallets > pallets[i].stackSize){
             palletsOfLocalWithLessPallets = pallets[i].stackSize;
             localWithLessPallets = i;
         }
     }
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-    if(palletsOfLocalWithLessPallets < localMaxPallets){
+    if(palletsOfLocalWithLessPallets < localMaxPallets){//se o local não estiver cheio, adiciona um novo pallet
         stackAppend(&pallets[localWithLessPallets], 1);
         printf("foi adicionado um pallet no local %d\n", localWithLessPallets + 1);
-    }else{
+    }else{//se o local com menos pallets estiver cheio, não existe mais nenhum local para adicionar pallets
         printf("nenhum espa%co para adicionar um pallet\n", 135);
     }
     printPallets(pallets);
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n\n");
 }
 
+//remove pallet do primeiro local com mais pallets
 void removePallet(stack* pallets){
-    int localWithMorePallets = -1;
-    int palletsOfLocalWithMorePallets = 0;
-    for(int i = 0; i < totalLocals; i++){
+    int localWithMorePallets = -1;//variavel para armazenar o local com mais pallets
+    int palletsOfLocalWithMorePallets = 0; //variavel para armazenar quantos pallets possui o local com mais pallets
+    for(int i = 0; i < totalLocals; i++){ //procura pelo local com mais pallets
         if(palletsOfLocalWithMorePallets < pallets[i].stackSize){
             palletsOfLocalWithMorePallets = pallets[i].stackSize;
             localWithMorePallets = i;
         }
     }
     printf("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\n");
-    if(palletsOfLocalWithMorePallets > 0){
+    if(palletsOfLocalWithMorePallets > 0){//se o local não estiver vazio, remove um pallet
         stackPop(&pallets[localWithMorePallets]);
         printf("foi removido um pallet no local %d\n", localWithMorePallets + 1);
 
-    }else{
+    }else{//se o local com mais pallets estiver vazio, não existe mais nenhum local para remover pallets
         printf("nenhum pallet para ser removido\n");
     }
     printPallets(pallets);
@@ -85,9 +88,9 @@ void removePallet(stack* pallets){
 }
 
 int main(void){
-    stack pallets[totalLocals];
+    stack pallets[totalLocals]; //stack que armazena stacks
     for(int i = 0; i < totalLocals; i++){
-        pallets[i] = createStack();
+        pallets[i] = createStack(); //atribui stacks aos array dos pallets
     }
     int input = 0;
     do{
@@ -108,6 +111,6 @@ int main(void){
             printf("input incorreto!\n\n");
             break;
         }
-    }while(input != 3);
+    }while(input != 3); //enquanto a opção não for sair, não sai
     return 1;
 }
