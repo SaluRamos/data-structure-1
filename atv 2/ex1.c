@@ -1,8 +1,9 @@
+//Salu Conteratto Ramos, RA: 2150352
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
-#include <Windows.h>
 #define maxQueueSize 10
 #define lineLenght 100
 
@@ -120,6 +121,7 @@ void printQueueArray(queue *queue_){
     printf("-----------------------\n");
 }
 
+//retorna o tamanho de uma string
 int len(char *string_){
     int size = 0;
     while(1){
@@ -133,6 +135,7 @@ int len(char *string_){
     return size;
 }
 
+//substitui uma string dentro de uma string
 char* replace(char *orig, char *rep, char *with){
     char *result;
     char *ins;
@@ -171,6 +174,7 @@ char* replace(char *orig, char *rep, char *with){
     return result;
 }
 
+//retorna próximo local no arquivo de locais para visitar
 house getNewHouse(FILE *f){
     char ch;
     char *line = (char *) malloc(sizeof(char)*lineLenght);
