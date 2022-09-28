@@ -49,16 +49,10 @@ int* splitPath(char *string){
     int pathDepth = stringCharAmount(string, ',') + 1;
     int *array = (int *) malloc(sizeof(int)*pathDepth);
     int atualArray = 0;
-    for(int i = 0; i < pathDepth; i++){
-        array[i] = 0;
-    }
-
     int tempMaxSize = 5;
     char *temp = (char *) malloc(sizeof(char)*tempMaxSize);
     int atualTemp = 0;
-    
     int stringLen = strlen(string);
-
     for(int i = 0; i < stringLen; i++){
         if(string[i] == ',' || i == (stringLen - 1)){
             if(i == (stringLen - 1)){
@@ -66,9 +60,6 @@ int* splitPath(char *string){
             }
             array[atualArray] = atoi(temp);
             temp[0] = '\0';
-            // for(int j = 0; j < tempMaxSize; j++){
-            //     temp[j] = NULL;
-            // }
             atualTemp = 0;
             atualArray += 1;
         }else{
@@ -83,6 +74,7 @@ struct node* insert(struct node* node, int data_element, char path[]){
     if(node == NULL){
         return newNode(data_element);
     }else{
+        int pathDepth = stringCharAmount(path, ',') + 1;
         int *array = splitPath(path);
         // node->elements[node->atualSize - 1] = insert(node->elements[node->atualSize - 1], data_element);
         // node->atualSize += 1;
@@ -91,19 +83,13 @@ struct node* insert(struct node* node, int data_element, char path[]){
 }
 
 int main(){
-    // struct node *root = NULL;
+    struct node *root = NULL;
 
-    int pathDepth = stringCharAmount("0,0,12", ',') + 1;
-    printf("tamanho = %d\n", pathDepth);
-    int *array = splitPath("0,0,12");
-    for(int i = 0; i < pathDepth; i++){
-        printf("%d\n", array[i]);
-    }
-    // root = insert(root, 10, "0");
-    // insert(root, 20, "0,0");
+    root = insert(root, 10, "0");
+    insert(root, 20, "0,0");
     // printf("%d\n", root->data_element);
     // printf("chegou aqui");
-    // display(root);
+    display(root);
 
     return 1;
 }
