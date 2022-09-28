@@ -1,5 +1,5 @@
 cls
-gcc -Wall -o "main" "ex9.c" -static
+gcc -Wall -o "main" "ex10.c" -static
 main.exe
 PAUSE
 cls
