@@ -1,39 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #define MAX_NODE_ELEMENTS 100
 
 //exercicio arvore
 
-struct node{
-    int data_element;
-    struct node *elements[MAX_NODE_ELEMENTS];
-    int atualSize;
+struct tree{
+    int value; //valor do node
+    struct tree *node[MAX_NODE_ELEMENTS]; //array de nodes
+    int size; //quantidade de nodes atuais
 };
 
 //inicializa node
-struct node *newNode(int data_element){
-    struct node *temp = (struct node *) malloc(sizeof(struct node));
-    temp->atualSize = 0;
-    temp->data_element = data_element;
-    for(int i = 0; i < MAX_NODE_ELEMENTS; i++){
-        temp->elements[i] = NULL;
-    }
+struct tree *newTree(int initial_value){
+    struct tree *temp = (struct tree *) malloc(sizeof(struct tree));
+    temp->size = 0;
+    temp->value = initial_value;
     return temp;
 }
 
-void display(struct node *root){
-    if(root != NULL){
-        for(int i = 0; i < root->atualSize; i++){
-            if(root->elements[i] != NULL){
-                display(root->elements[i]);
-            }
-            printf("%d \n", root->data_element);
+//ittera entre os elementos de uma arvore
+void itterTree(struct tree* tree_, int depth){
+    if(tree_->size == 0){
+        printf("%d ", tree_->value);
+    }else{
+        for(int i = 0; i < tree_->size; i++){
+            printf("%d ", tree_->value);
         }
     }
+    printf("\n\n");
 }
 
-//funcionando
+//printa todos os paths
+void printTree(struct tree *root){
+    
+}
+
+//print um path
+void print(char path[]){
+
+}
+
+//retorna quantidade de determinado char em uma string
 int stringCharAmount(char string[], char char_){
     int amount = 0;
     for(int i = 0; i < strlen(string); i++){
@@ -44,7 +53,7 @@ int stringCharAmount(char string[], char char_){
     return amount;
 }
 
-//funcionando
+//retorna array de int de uma string com os padrões de uma string path (não existe objeto string path pela falta de suporte da linguagem)
 int* splitPath(char *string){
     int pathDepth = stringCharAmount(string, ',') + 1;
     int *array = (int *) malloc(sizeof(int)*pathDepth);
@@ -69,10 +78,15 @@ int* splitPath(char *string){
     return array;
 }
 
-//precisa de um argumento string 'path'
-struct node* insert(struct node* node, int data_element, char path[]){
-    if(node == NULL){
-        return newNode(data_element);
+//insere um elemento na árvore
+struct tree* insert(struct tree* tree_, int new_value, char path[]){
+
+    //verifica se o 'depth' existe
+    //se existir, insere novo elemento na arvore
+
+
+    if(tree_ == NULL){
+        return newTree(new_value);
     }else{
         int pathDepth = stringCharAmount(path, ',') + 1;
         int *array = splitPath(path);
