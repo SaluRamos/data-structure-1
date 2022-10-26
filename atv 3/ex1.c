@@ -1,3 +1,6 @@
+//Feito sozinho por: Salu Conteratto Ramos
+//RA: 2150352
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
