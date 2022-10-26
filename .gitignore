@@ -9,6 +9,6 @@
 !atv 2/
 !atv 3/
 !sala de aula/
-!exec.sh
-!visita.txt
+!*visita.txt
 !*enunciado.pdf
+!*pacientes.txt
