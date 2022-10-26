@@ -4,6 +4,7 @@
 #include <time.h>
 #include <windows.h>
 
+//declara a estrutura de um paciente
 typedef struct{
     char *name;
     char *sex;
@@ -22,17 +23,20 @@ char* getAtualDate(){
     return atualDate;
 }
 
+//faz a contagem de dias a partir de uma data
 int daysFromDate(char* fromDate){
     char* atualDate = getAtualDate();
     return 0;
 }
 
+//descobre a idade do paciente a partir da data de nascimento
 int getPatientAge(char* fromDate){
     char* atualDate = getAtualDate();
     return 0;
 }
 
-patient createPatient(char *info){
+//inicializa um objeto do tipo Paciente a partir de uma linha do banco de dados
+patient createPatientFromLine(char *info){
     patient newPatient;
     //atribui nome
     char *name = strtok(info, ",");
@@ -50,6 +54,18 @@ patient createPatient(char *info){
     char *lastConsultation = strtok(NULL, ",");
     memmove(lastConsultation, lastConsultation + 1, strlen(lastConsultation));
     lastConsultation[strlen(lastConsultation) - 1] = '\0';
+    newPatient.lastConsultation = lastConsultation;
+    newPatient.age = getPatientAge(birthDay);
+    newPatient.daysSinceLastConsultation = daysFromDate(lastConsultation);
+    return newPatient;
+}
+
+//inicializa um objeto do tipo Paciente a partir de variaveis definidas
+patient createPatient(char *name, char *sex, char* birthDay, int age, char *lastConsultation, int daysSinceLastConsultation){
+    patient newPatient;
+    newPatient.name = name;
+    newPatient.sex = sex;
+    newPatient.birthDay = birthDay;
     newPatient.lastConsultation = lastConsultation;
     newPatient.age = getPatientAge(birthDay);
     newPatient.daysSinceLastConsultation = daysFromDate(lastConsultation);
@@ -106,7 +122,7 @@ int main(int argc, char *argv[]){
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia, se for acabou o arquivo
             break;
         }
-        patients[atualLine] = createPatient(nextLine);
+        patients[atualLine] = createPatientFromLine(nextLine);
         printPatient(&patients[atualLine]);
         atualLine += 1;
         Sleep(10);
