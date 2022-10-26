@@ -224,6 +224,10 @@ char* readFileLine(FILE *f){
     return line;
 }
 
+void insertionSortDoublyLinkedList(struct Node* nodeHead, patient data){
+    printPatient(&data);
+}
+
 int main(int argc, char *argv[]){
     //inicializa arquivo de entrada e saída
     FILE *inputFile;
@@ -244,17 +248,14 @@ int main(int argc, char *argv[]){
         outputFileZA = fopen("ZA.txt", "w+");
     }
     //declara variavel que contém todos os pacientes (lista duplamente encadeada)
-    patient patients[40];
+    struct Node* patientsHead = NULL;
     //extração dos dados
-    int atualLine = 0;
     while(1){
         char *nextLine = readFileLine(inputFile);
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia, se for acabou o arquivo
             break;
         }
-        patients[atualLine] = createPatientFromLine(nextLine);
-        printPatient(&patients[atualLine]);
-        atualLine += 1;
+        insertionSortDoublyLinkedList(&patientsHead, createPatientFromLine(nextLine));
     }
     //funcionamento do software
 
