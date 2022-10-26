@@ -258,15 +258,17 @@ int main(int argc, char *argv[]){
         }
         insertionSortDoublyLinkedList(&patientsHead, createPatientFromLine(nextLine));
     }
-    //funcionamento do software
-
-
-
-
-
-
-    //fecha arquivos
     fclose(inputFile);
+    //funcionamento do software
+    int option = 0;
+    do{
+        printf("1 - para adicionar novo paciente");
+        printf("2 - pesquisar nome (retorna idade e dias desde ultima consulta)");
+        printf("3 - fechar");
+        printf("OQUE DESEJA FAZER? ");
+        scanf("%d", &option);
+    }while(option != 3);
+    //fecha arquivos
     fclose(outputFileAZ);
     fclose(outputFileZA);
     //limpa variaveis
