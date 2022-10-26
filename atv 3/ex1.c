@@ -3,9 +3,8 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <time.h>
-#include <windows.h>
+#include <string.h> //usado para: copiar strings, comparar strings, descobrir tamanho de strings e quebrar strings em partes a partir de um char
+#include <time.h> //usado para descobrir data atual
 
 //declara a estrutura de um paciente
 typedef struct{
@@ -17,6 +16,7 @@ typedef struct{
     int daysSinceLastConsultation;
 } patient;
 
+//estrutura de "data" para facilitar calculos
 typedef struct{
     int day;
     int month;
@@ -119,6 +119,94 @@ void printPatient(patient *aPatient){
     printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s', IDADE: '%d', DIAS DESDE ULTIMA CONSULTA: '%d'\n\n", aPatient->name, aPatient->sex, aPatient->birthDay, aPatient->lastConsultation, aPatient->age, aPatient->daysSinceLastConsultation);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// node creation
+struct Node {
+  patient data;
+  struct Node* next;
+  struct Node* prev;
+};
+
+// insert node at the front
+void insertFront(struct Node** head, patient data) {
+  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  newNode->data = data;
+  newNode->next = (*head);
+  newNode->prev = NULL;
+  if ((*head) != NULL){
+    (*head)->prev = newNode;
+  }
+  (*head) = newNode;
+}
+
+// insert a node after a specific node
+void insertAfter(struct Node* prev_node, patient data) {
+  if (prev_node == NULL) {
+    printf("previous node cannot be null");
+    return;
+  }
+  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  newNode->data = data;
+  newNode->next = prev_node->next;
+  prev_node->next = newNode;
+  newNode->prev = prev_node;
+  if (newNode->next != NULL){
+    newNode->next->prev = newNode;
+  }
+}
+
+// insert a newNode at the end of the list
+void insertEnd(struct Node** head, patient data) {
+  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  newNode->data = data;
+  newNode->next = NULL;
+  struct Node* temp = *head;
+  if (*head == NULL) {
+    newNode->prev = NULL;
+    *head = newNode;
+    return;
+  }
+  while (temp->next != NULL){
+    temp = temp->next;
+  }
+  temp->next = newNode;
+  newNode->prev = temp;
+}
+
+// print the doubly linked list
+void displayList(struct Node* node) {
+  struct Node* last;
+  while (node != NULL) {
+    
+    last = node;
+    node = node->next;
+  }
+  if (node == NULL){
+    printf("NULL\n");
+  }
+}
+
 //abstração para ler próxima linha de um arquivo
 char* readFileLine(FILE *f){
     int lineLenght = 150;
@@ -167,7 +255,6 @@ int main(int argc, char *argv[]){
         patients[atualLine] = createPatientFromLine(nextLine);
         printPatient(&patients[atualLine]);
         atualLine += 1;
-        Sleep(10);
     }
     //funcionamento do software
 
