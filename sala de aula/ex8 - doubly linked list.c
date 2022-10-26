@@ -10,11 +10,11 @@ struct Node {
 
 // insert node at the front
 void insertFront(struct Node** head, int data) {
-  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
   newNode->data = data;
   newNode->next = (*head);
   newNode->prev = NULL;
-  if ((*head) != NULL){
+  if((*head) != NULL){
     (*head)->prev = newNode;
   }
   (*head) = newNode;
@@ -22,32 +22,32 @@ void insertFront(struct Node** head, int data) {
 
 // insert a node after a specific node
 void insertAfter(struct Node* prev_node, int data) {
-  if (prev_node == NULL) {
+  if(prev_node == NULL){
     printf("previous node cannot be null");
     return;
   }
-  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
   newNode->data = data;
   newNode->next = prev_node->next;
   prev_node->next = newNode;
   newNode->prev = prev_node;
-  if (newNode->next != NULL){
+  if(newNode->next != NULL){
     newNode->next->prev = newNode;
   }
 }
 
 // insert a newNode at the end of the list
 void insertEnd(struct Node** head, int data) {
-  struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
   newNode->data = data;
   newNode->next = NULL;
   struct Node* temp = *head;
-  if (*head == NULL) {
+  if(*head == NULL){
     newNode->prev = NULL;
     *head = newNode;
     return;
   }
-  while (temp->next != NULL){
+  while(temp->next != NULL){
     temp = temp->next;
   }
   temp->next = newNode;
@@ -56,44 +56,48 @@ void insertEnd(struct Node** head, int data) {
 
 // delete a node from the doubly linked list
 void deleteNode(struct Node** head, struct Node* del_node) {
-  if (*head == NULL || del_node == NULL)
+  if(*head == NULL || del_node == NULL){
     return;
-  if (*head == del_node)
+  }
+  if(*head == del_node){
     *head = del_node->next;
-  if (del_node->next != NULL)
+  }
+  if(del_node->next != NULL){
     del_node->next->prev = del_node->prev;
-  if (del_node->prev != NULL)
+  }
+  if(del_node->prev != NULL){
     del_node->prev->next = del_node->next;
+  }
   free(del_node);
 }
 
 // print the doubly linked list
 void displayList(struct Node* node) {
   struct Node* last;
-  while (node != NULL) {
+  while(node != NULL){
     printf("%d->", node->data);
     last = node;
     node = node->next;
   }
-  if (node == NULL){
+  if(node == NULL){
     printf("NULL\n");
   }
 }
 
 int main() {
   struct Node* head = NULL;
+  
+  displayList(head);
 
   insertEnd(&head, 5);
   insertFront(&head, 1);
   insertFront(&head, 6);
   insertEnd(&head, 9);
-
   insertAfter(head, 11);
   insertAfter(head->next, 15);
 
   displayList(head);
 
-  // delete the last node
   deleteNode(&head, head->next->next->next->next->next);
 
   displayList(head);

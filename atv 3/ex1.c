@@ -154,7 +154,7 @@ void insertFront(struct Node** head, patient data) {
   newNode->data = data;
   newNode->next = (*head);
   newNode->prev = NULL;
-  if ((*head) != NULL){
+  if((*head) != NULL){
     (*head)->prev = newNode;
   }
   (*head) = newNode;
@@ -162,7 +162,7 @@ void insertFront(struct Node** head, patient data) {
 
 // insert a node after a specific node
 void insertAfter(struct Node* prev_node, patient data) {
-  if (prev_node == NULL) {
+  if(prev_node == NULL){
     printf("previous node cannot be null");
     return;
   }
@@ -171,7 +171,7 @@ void insertAfter(struct Node* prev_node, patient data) {
   newNode->next = prev_node->next;
   prev_node->next = newNode;
   newNode->prev = prev_node;
-  if (newNode->next != NULL){
+  if(newNode->next != NULL){
     newNode->next->prev = newNode;
   }
 }
@@ -182,12 +182,12 @@ void insertEnd(struct Node** head, patient data) {
   newNode->data = data;
   newNode->next = NULL;
   struct Node* temp = *head;
-  if (*head == NULL) {
+  if(*head == NULL){
     newNode->prev = NULL;
     *head = newNode;
     return;
   }
-  while (temp->next != NULL){
+  while(temp->next != NULL){
     temp = temp->next;
   }
   temp->next = newNode;
@@ -197,12 +197,12 @@ void insertEnd(struct Node** head, patient data) {
 // print the doubly linked list
 void displayList(struct Node* node) {
   struct Node* last;
-  while (node != NULL) {
-    
+  while(node != NULL){
+    printf("%s->", node->data.name); //tem que verificar se isso esta certo
     last = node;
     node = node->next;
   }
-  if (node == NULL){
+  if(node == NULL){
     printf("NULL\n");
   }
 }
@@ -224,6 +224,7 @@ char* readFileLine(FILE *f){
     return line;
 }
 
+//adiciona o paciente na lista duplamente encadeada de maneira ordenada (de acordo com o nome)
 void insertionSortDoublyLinkedList(struct Node* nodeHead, patient data){
     printPatient(&data);
 }
@@ -249,7 +250,7 @@ int main(int argc, char *argv[]){
     }
     //declara variavel que contém todos os pacientes (lista duplamente encadeada)
     struct Node* patientsHead = NULL;
-    //extração dos dados
+    //extração dos dados do arquivo de pacientes
     while(1){
         char *nextLine = readFileLine(inputFile);
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia, se for acabou o arquivo
