@@ -14,25 +14,62 @@ typedef struct{
     int daysSinceLastConsultation;
 } patient;
 
+typedef struct{
+    int day;
+    int month;
+    int year;
+} sTime;
+
+sTime stringToSTime(char *dateString){
+    char *dateStringCopy = (char *) malloc(11);
+    strcpy(dateStringCopy, dateString);
+    sTime date;
+    char *day = strtok(dateStringCopy, "/");
+    date.day = atoi(day);
+    char *month = strtok(NULL, "/");
+    date.month = atoi(month);
+    char *year = strtok(NULL, "/");
+    date.year = atoi(year);
+    return date;
+}
+
 //abstrai adquirir a data atual no formato "dd/mm/YYYY" ou "%d/%m/%Y"
 char* getAtualDate(){
     char atualDate[11];
     time_t rawtime = time(NULL);
     struct tm *ts = localtime(&rawtime);
     strftime(atualDate, sizeof(atualDate), "%d/%m/%Y", ts);
-    return atualDate;
+    // free(rawtime);
+    // free(ts);
+    char *atualDateCopy = (char *) malloc(11);
+    strcpy(atualDateCopy, atualDate);
+    return atualDateCopy;
 }
 
 //faz a contagem de dias a partir de uma data
-int daysFromDate(char* fromDate){
-    char* atualDate = getAtualDate();
-    return 0;
+int daysFromDate(char* _fromDate){
+    sTime atualDate = stringToSTime(getAtualDate());
+    sTime fromDate = stringToSTime(_fromDate);
+    int dayOfYearToInitialMonthDay[12] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
+    int atualDateDayOfYear = dayOfYearToInitialMonthDay[atualDate.month - 1] + atualDate.day;
+    int fromDateDayOfYear = dayOfYearToInitialMonthDay[fromDate.month - 1] + fromDate.day;
+    int days = (atualDate.year - fromDate.year)*365;
+    days += atualDateDayOfYear - fromDateDayOfYear;
+    return days;
 }
 
 //descobre a idade do paciente a partir da data de nascimento
-int getPatientAge(char* fromDate){
-    char* atualDate = getAtualDate();
-    return 0;
+int getPatientAge(char* _fromDate){
+    sTime atualDate = stringToSTime(getAtualDate());
+    sTime fromDate = stringToSTime(_fromDate);
+    int age = atualDate.year - fromDate.year;
+    if(age < 0){
+        return 0;
+    }
+    if(fromDate.month <= atualDate.month && fromDate.day < atualDate.day && age > 0){
+        age -= 1;
+    }
+    return age;
 }
 
 //inicializa um objeto do tipo Paciente a partir de uma linha do banco de dados
@@ -55,7 +92,9 @@ patient createPatientFromLine(char *info){
     memmove(lastConsultation, lastConsultation + 1, strlen(lastConsultation));
     lastConsultation[strlen(lastConsultation) - 1] = '\0';
     newPatient.lastConsultation = lastConsultation;
+    //atribui idade
     newPatient.age = getPatientAge(birthDay);
+    //atribui dias desde última consulta
     newPatient.daysSinceLastConsultation = daysFromDate(lastConsultation);
     return newPatient;
 }
@@ -74,7 +113,7 @@ patient createPatient(char *name, char *sex, char* birthDay, int age, char *last
 
 //mostra informações de um objeto paciente
 void printPatient(patient *aPatient){
-    printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s', IDADE: '%d'\n\n, DIAS DESDE ULTIMA CONSULTA: '%d'", aPatient->name, aPatient->sex, aPatient->birthDay, aPatient->lastConsultation, aPatient->age, aPatient->daysSinceLastConsultation);
+    printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s', IDADE: '%d', DIAS DESDE ULTIMA CONSULTA: '%d'\n\n", aPatient->name, aPatient->sex, aPatient->birthDay, aPatient->lastConsultation, aPatient->age, aPatient->daysSinceLastConsultation);
 }
 
 //abstração para ler próxima linha de um arquivo
