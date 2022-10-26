@@ -226,7 +226,7 @@ char* readFileLine(FILE *f){
 
 //adiciona o paciente na lista duplamente encadeada de maneira ordenada (de acordo com o nome)
 void insertionSortDoublyLinkedList(struct Node* nodeHead, patient data){
-    printPatient(&data);
+    // printPatient(&data);
 }
 
 int main(int argc, char *argv[]){
@@ -262,11 +262,12 @@ int main(int argc, char *argv[]){
     //funcionamento do software
     int option = 0;
     do{
-        printf("1 - para adicionar novo paciente");
-        printf("2 - pesquisar nome (retorna idade e dias desde ultima consulta)");
-        printf("3 - fechar");
+        printf("1 - para adicionar novo paciente\n");
+        printf("2 - pesquisar nome (retorna idade e dias desde ultima consulta)\n");
+        printf("3 - fechar\n");
         printf("OQUE DESEJA FAZER? ");
         scanf("%d", &option);
+        printf("\n");
     }while(option != 3);
     //fecha arquivos
     fclose(outputFileAZ);
