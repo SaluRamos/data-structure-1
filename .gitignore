@@ -5,6 +5,7 @@
 !.gitignore
 !README.md
 !exec.bat
+!exec.sh
 !atv 1/
 !atv 2/
 !atv 3/
