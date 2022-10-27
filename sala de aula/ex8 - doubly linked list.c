@@ -1,104 +1,82 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
-// node creation
-struct Node {
+struct node{
   int data;
-  struct Node* next;
-  struct Node* prev;
+  struct node *previous;
+  struct node *next;
 };
 
-// insert node at the front
-void insertFront(struct Node** head, int data) {
-  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
+struct node *head, *tail = NULL;
+
+void addNode(int data) {
+  struct node *newNode = (struct node*)malloc(sizeof(struct node));
   newNode->data = data;
-  newNode->next = (*head);
-  newNode->prev = NULL;
-  if((*head) != NULL){
-    (*head)->prev = newNode;
+  if(head == NULL) {
+      head = tail = newNode;
+      head->previous = NULL;
+      tail->next = NULL;
   }
-  (*head) = newNode;
-}
-
-// insert a node after a specific node
-void insertAfter(struct Node* prev_node, int data) {
-  if(prev_node == NULL){
-    printf("previous node cannot be null");
-    return;
-  }
-  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-  newNode->data = data;
-  newNode->next = prev_node->next;
-  prev_node->next = newNode;
-  newNode->prev = prev_node;
-  if(newNode->next != NULL){
-    newNode->next->prev = newNode;
+  else {
+      tail->next = newNode;
+      newNode->previous = tail;
+      tail = newNode;
+      tail->next = NULL;
   }
 }
 
-// insert a newNode at the end of the list
-void insertEnd(struct Node** head, int data) {
-  struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-  newNode->data = data;
-  newNode->next = NULL;
-  struct Node* temp = *head;
-  if(*head == NULL){
-    newNode->prev = NULL;
-    *head = newNode;
-    return;
+void sortList() {
+  struct node *current = NULL, *index = NULL;
+  int temp;
+  if(head == NULL){
+      return;
   }
-  while(temp->next != NULL){
-    temp = temp->next;
-  }
-  temp->next = newNode;
-  newNode->prev = temp;
-}
-
-// delete a node from the doubly linked list
-void deleteNode(struct Node** head, struct Node* del_node) {
-  if(*head == NULL || del_node == NULL){
-    return;
-  }
-  if(*head == del_node){
-    *head = del_node->next;
-  }
-  if(del_node->next != NULL){
-    del_node->next->prev = del_node->prev;
-  }
-  if(del_node->prev != NULL){
-    del_node->prev->next = del_node->next;
-  }
-  free(del_node);
-}
-
-// print the doubly linked list
-void displayList(struct Node* node) {
-  struct Node* last;
-  while(node != NULL){
-    printf("%d->", node->data);
-    last = node;
-    node = node->next;
-  }
-  if(node == NULL){
-    printf("NULL\n");
+  else {
+      for(current = head; current->next != NULL; current = current->next) {
+          for(index = current->next; index != NULL; index = index->next) {
+              if(current->data > index->data) {
+                  temp = current->data;
+                  current->data = index->data;
+                  index->data = temp;
+              }
+          }
+      }
   }
 }
 
-int main() {
-  struct Node* head = NULL;
-  
-  displayList(head);
+void display() {
+  struct node *current = head;
+  if(head == NULL) {
+      printf("List is empty\n");
+      return;
+  }
+  while(current != NULL) {
+      printf("%d ",current->data);
+      current = current->next;
+  }
+  printf("\n");
+}
 
-  insertEnd(&head, 5);
-  insertFront(&head, 1);
-  insertFront(&head, 6);
-  insertEnd(&head, 9);
-  insertAfter(head, 11);
-  insertAfter(head->next, 15);
+int main()
+{
+  //Add nodes to the list
+  addNode(7);
+  addNode(1);
+  addNode(4);
+  addNode(5);
+  addNode(2);
 
-  displayList(head);
+  //Displaying original list
+  printf("Original list: \n");
+  display();
 
-  deleteNode(&head, head->next->next->next->next->next);
+  //Sorting list
+  sortList();
 
-  displayList(head);
+  //Displaying sorted list
+  printf("Sorted list: \n");
+  display();
+
+  return 0;
 }

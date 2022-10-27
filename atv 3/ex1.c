@@ -8,12 +8,10 @@
 
 //declara a estrutura de um paciente
 typedef struct{
-    char *name;
-    char *sex;
-    char *birthDay;
-    int age;
-    char *lastConsultation;
-    int daysSinceLastConsultation;
+    char name[60];
+    char sex[2];
+    char birthDay[11];
+    char lastConsultation[11];
 } patient;
 
 //estrutura de "data" para facilitar calculos
@@ -72,36 +70,16 @@ int getPatientAge(char* _fromDate){
 //inicializa um objeto do tipo Paciente a partir de variaveis definidas
 patient createPatient(char *name, char *sex, char* birthDay, char *lastConsultation){
     patient newPatient;
-    newPatient.name = name;
-    newPatient.sex = sex;
-    newPatient.birthDay = birthDay;
-    newPatient.lastConsultation = lastConsultation;
-    newPatient.age = getPatientAge(birthDay);
-    newPatient.daysSinceLastConsultation = daysFromDate(lastConsultation);
+    strcpy(newPatient.name, name);
+    strcpy(newPatient.sex, sex);
+    strcpy(newPatient.birthDay, birthDay);
+    strcpy(newPatient.lastConsultation, lastConsultation);
     return newPatient;
 }
 
-//RegEx da linha do banco de dados (LEGACY)
-// patient createPatientFromLine(char *info){
-//     //atribui nome
-//     char *name = strtok(info, ",");
-//     memmove(name, name + 1, strlen(name));
-//     //atribui sexo
-//     char *sex = strtok(NULL, ",");
-//     memmove(sex, sex + 1, strlen(sex));
-//     //atribui data de nascimento
-//     char *birthDay = strtok(NULL, ",");
-//     memmove(birthDay, birthDay + 1, strlen(birthDay));
-//     //atribui última consulta
-//     char *lastConsultation = strtok(NULL, ",");
-//     memmove(lastConsultation, lastConsultation + 1, strlen(lastConsultation));
-//     lastConsultation[strlen(lastConsultation) - 1] = '\0';
-//     return createPatient(name, sex, birthDay, lastConsultation);
-// }
-
 //mostra informações de um objeto paciente
-void printPatient(patient *aPatient){
-    printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s', IDADE: '%d', DIAS DESDE ULTIMA CONSULTA: '%d'\n\n", aPatient->name, aPatient->sex, aPatient->birthDay, aPatient->lastConsultation, aPatient->age, aPatient->daysSinceLastConsultation);
+void printPatient(patient aPatient){
+    printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s'\n\n", aPatient.name, aPatient.sex, aPatient.birthDay, aPatient.lastConsultation);
 }
 
 //abstração para ler próxima linha de um arquivo
@@ -138,90 +116,80 @@ char* readFileLine(FILE *f, int lineMaxSize){
 
 
 
-
-
-
-// node creation
-struct Node {
-    patient data;
-    struct Node *next;
-    struct Node *prev;
+struct node{
+  patient data;
+  struct node *previous;
+  struct node *next;
 };
 
-// insert node at the front
-void insertFront(struct Node **head, patient data) {
-    struct Node *newNode = (struct Node *) malloc(sizeof(struct Node));
+struct node *head, *tail = NULL;
+
+void addNode(patient data) {
+    struct node *newNode = (struct node *) malloc(sizeof(struct node));
     newNode->data = data;
-    newNode->next = (*head);
-    newNode->prev = NULL;
-    if((*head) != NULL){
-        (*head)->prev = newNode;
+    if(head == NULL){
+        head = tail = newNode;
+        head->previous = NULL;
+        tail->next = NULL;
     }
-    (*head) = newNode;
+    else{
+        tail->next = newNode;
+        newNode->previous = tail;
+        tail = newNode;
+        tail->next = NULL;
+    }
 }
 
-// insert a node after a specific node
-void insertAfter(struct Node* prev_node, patient data) {
-    if(prev_node == NULL){
-        printf("previous node cannot be null");
+void sortList() {
+    struct node *current = NULL, *index = NULL;
+    patient temp;
+    if(head == NULL){
         return;
     }
-    struct Node* newNode = (struct Node*) malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->next = prev_node->next;
-    prev_node->next = newNode;
-    newNode->prev = prev_node;
-    if(newNode->next != NULL){
-        newNode->next->prev = newNode;
-    }
-}
-
-// insert a newNode at the end of the list
-void insertEnd(struct Node **head, patient data) {
-    struct Node *newNode = (struct Node *) malloc(sizeof(struct Node));
-    newNode->data = data;
-    newNode->next = NULL;
-    struct Node *temp = *head;
-    if(*head == NULL){
-        newNode->prev = NULL;
-        *head = newNode;
-        return;
-    }
-    while(temp->next != NULL){
-        temp = temp->next;
-    }
-    temp->next = newNode;
-    newNode->prev = temp;
-}
-
-// print the doubly linked list
-void displayList(struct Node* node) {
-  struct Node *last;
-  while(node != NULL){
-    printf("%s->", node->data.name); //tem que verificar se isso esta certo
-    last = node;
-    node = node->next;
-  }
-  if(node == NULL){
-    printf("NULL\n");
-  }
-}
-
-//adiciona o paciente na lista duplamente encadeada de maneira ordenada (de acordo com o nome)
-void insertionSortDoublyLinkedList(struct Node *nodeHead, patient data){
-    while(1){
-        if(nodeHead->next == NULL){
-            insertFront(&nodeHead, data);
-            break;
+    else {
+        for(current = head; current->next != NULL; current = current->next) {
+            for(index = current->next; index != NULL; index = index->next) {
+                if(strcmp(current->data.name, index->data.name) > 0) {
+                    temp = current->data;
+                    current->data = index->data;
+                    index->data = temp;
+                }
+            }
         }
-        printf("procurando");
     }
-    // insertFront(&head, 6);
-    // insertEnd(&head, 9);
-    // insertAfter(head->next, 15);
-    displayList(nodeHead);
-    printf("\n");
 }
+
+void display() {
+    struct node *current = head;
+    if(head == NULL) {
+        printf("EMPTY\n\n");
+        return;
+    }
+    while(current != NULL) {
+        printf("%s -> ", current->data.name);
+        current = current->next;
+    }
+    printf("\n\n");
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 int main(int argc, char *argv[]){
     //inicializa arquivo de entrada e saída
@@ -242,21 +210,26 @@ int main(int argc, char *argv[]){
     }else{
         outputFileZA = fopen("ZA.txt", "w+");
     }
-    //declara variavel que contém todos os pacientes (lista duplamente encadeada)
-    struct Node *nodeHead = NULL;
     //extração dos dados do arquivo de pacientes
+
+    patient newPatient;
     while(1){
         char *nextLine = readFileLine(inputFile, 150);
-        if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia, se for acabou o arquivo
+        if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia
             break;
         }
-        char name[50];
-        char sex[1];
+        char name[60];
+        char sex[2];
         char birthDay[11];
         char lastConsultation[11];
         sscanf(nextLine, "<%[^,], %1[MF], %10[0-9/], %10[0-9/]>", name, sex, birthDay, lastConsultation);
-        insertionSortDoublyLinkedList(nodeHead, createPatient(name, sex, birthDay, lastConsultation));
+        newPatient = createPatient(name, sex, birthDay, lastConsultation);
+        printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s'\n", name, sex, birthDay, lastConsultation);
+        printPatient(newPatient);
+        addNode(newPatient);
     }
+    sortList();
+    display();
     fclose(inputFile);
     //funcionamento do software
     int option = 0;
@@ -268,7 +241,20 @@ int main(int argc, char *argv[]){
         scanf("%d", &option);
         switch(option){
             case 1:
-                //function
+                // char name[60] = "";
+                // char sex[1] = "";
+                // char birthDay[11] = "";
+                // char lastConsultation[11] = "";
+                // printf("Digite o nome: ");
+                // gets(name);
+                // printf("\nDigite o sexo: ");
+                // gets(sex);
+                // printf("\nDigite data de nascimento: ");
+                // gets(birthDay);
+                // printf("\nDigite data de ultima consulta: ");
+                // gets(lastConsultation);
+                // newPatient = createPatient(name, sex, birthDay, lastConsultation);
+                // addNode(newPatient);
                 break;
             case 2:
                 //function
@@ -279,6 +265,4 @@ int main(int argc, char *argv[]){
     //fecha arquivos
     fclose(outputFileAZ);
     fclose(outputFileZA);
-    //limpa variaveis
-    free(nodeHead);
 }
