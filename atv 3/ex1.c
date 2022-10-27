@@ -3,8 +3,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> //usado para: copiar strings, comparar strings, descobrir tamanho de strings e quebrar strings em partes a partir de um char
+#include <string.h>
 #include <time.h> //usado para descobrir data atual
+#include <ctype.h> //função tolower()
+#include <stdbool.h>
 
 //declara a estrutura de um paciente
 typedef struct{
@@ -70,7 +72,13 @@ int getPatientAge(char* _fromDate){
 //inicializa um objeto do tipo Paciente a partir de variaveis definidas
 patient createPatient(char *name, char *sex, char* birthDay, char *lastConsultation){
     patient newPatient;
-    strcpy(newPatient.name, name);
+    //converte nome para lowercase
+    char result[60] = "";
+    for(int i = 0; name[i] != '\0'; i++){
+        result[i] = tolower(name[i]);
+    }
+    //copia as variaveis
+    strcpy(newPatient.name, result);
     strcpy(newPatient.sex, sex);
     strcpy(newPatient.birthDay, birthDay);
     strcpy(newPatient.lastConsultation, lastConsultation);
@@ -98,24 +106,6 @@ char* readFileLine(FILE *f, int lineMaxSize){
     return line;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 struct node{
   patient data;
   struct node *previous;
@@ -140,7 +130,7 @@ void addNode(patient data) {
     }
 }
 
-void sortList() {
+void azsortList() {
     struct node *current = NULL, *index = NULL;
     patient temp;
     if(head == NULL){
@@ -159,8 +149,28 @@ void sortList() {
     }
 }
 
+void zasortList() {
+    struct node *current = NULL, *index = NULL;
+    patient temp;
+    if(head == NULL){
+        return;
+    }
+    else {
+        for(current = head; current->next != NULL; current = current->next) {
+            for(index = current->next; index != NULL; index = index->next) {
+                if(strcmp(current->data.name, index->data.name) < 0) {
+                    temp = current->data;
+                    current->data = index->data;
+                    index->data = temp;
+                }
+            }
+        }
+    }
+}
+
 void display() {
     struct node *current = head;
+    printf("\n\n");
     if(head == NULL) {
         printf("EMPTY\n\n");
         return;
@@ -172,24 +182,62 @@ void display() {
     printf("\n\n");
 }
 
+void option1(){
+    char name[60];
+    char sex[2];
+    char birthDay[11];
+    char lastConsultation[11];
+    patient newPatient;
+    printf("Digite o nome: ");
+    gets(name);
+    printf("Digite o sexo: ");
+    gets(sex);
+    printf("Digite data de nascimento: ");
+    gets(birthDay);
+    printf("Digite data de ultima consulta: ");
+    gets(lastConsultation);
+    newPatient = createPatient(name, sex, birthDay, lastConsultation);
+    addNode(newPatient);
+    display();
+}
 
+void option2(){
+    printf("Digite nome para buscar: ");
+    char name[60];
+    gets(name);
+    struct node *current = head;
+    bool finded = false;
+    if(head == NULL) {
+        printf("EMPTY\n\n");
+    }
+    else{
+        while(current != NULL){
+            if(strcmp(current->data.name, name) == 0){
+                finded = true;
+                break;
+            }
+            current = current->next;
+        }
+    }
+    if(finded == false){
+        printf("Nome n%co encontrado!\n", 198);
+    }
+    else{
+        printf("idade: %d anos\n", getPatientAge(current->data.birthDay));
+        printf("ultima consulta: %d dias atr%cs\n", daysFromDate(current->data.lastConsultation), 160);
+    }
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+void option3(FILE *file){
+    struct node *current = head;
+    while(current != NULL){
+        fwrite(current->data.name, 1, strlen(current->data.name), file);
+        if(current->next != NULL){
+            fwrite("\n", 1, 1, file);
+        }
+        current = current->next;
+    }
+}
 
 int main(int argc, char *argv[]){
     //inicializa arquivo de entrada e saída
@@ -223,46 +271,37 @@ int main(int argc, char *argv[]){
         }
         sscanf(nextLine, "<%[^,], %1[MF], %10[0-9/], %10[0-9/]>", name, sex, birthDay, lastConsultation);
         newPatient = createPatient(name, sex, birthDay, lastConsultation);
-        // printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s'\n", name, sex, birthDay, lastConsultation);
-        // printPatient(newPatient);
         addNode(newPatient);
     }
-    sortList();
     fclose(inputFile);
     //funcionamento do software
     int option = 0;
     do{
-        printf("1 - para adicionar novo paciente\n");
-        printf("2 - pesquisar nome (retorna idade e dias desde ultima consulta)\n");
-        printf("3 - fechar\n");
+        option = 0;
+        printf("1 - Adicionar novo paciente\n");
+        printf("2 - Pesquisar nome (retorna idade e dias desde ultima consulta)\n");
+        printf("3 - Sair\n");
         printf("OQUE DESEJA FAZER? ");
         scanf("%d", &option);
         int c;
-        while ((c = getchar()) != '\n' && c != EOF);
+        while ((c = getchar()) != '\n' && c != EOF); //descuga o C por conta de usar o gets mais a frente
+        printf("\n");
         switch(option){
             case 1:
-                printf("\n");
-                printf("Digite o nome: ");
-                gets(name);
-                printf("Digite o sexo: ");
-                gets(sex);
-                printf("Digite data de nascimento: ");
-                gets(birthDay);
-                printf("Digite data de ultima consulta: ");
-                gets(lastConsultation);
-                newPatient = createPatient(name, sex, birthDay, lastConsultation);
-                addNode(newPatient);
-                sortList();
-                display();
+                option1();
                 break;
             case 2:
-                //function
+                option2();
                 break;
             case 3:
-                printf("\nAT%c LOGO!", 144);
+                azsortList();
+                option3(outputFileAZ);
+                zasortList();
+                option3(outputFileZA);
+                printf("AT%c LOGO!", 144);
                 break;
             default:
-                printf("\nOP%c%cO N%cO EXISTE!\n", 128, 199, 199);
+                printf("OP%c%cO N%cO EXISTE!\n", 128, 199, 199);
         }
         printf("\n");
     }while(option != 3);
