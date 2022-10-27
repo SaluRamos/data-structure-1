@@ -211,25 +211,23 @@ int main(int argc, char *argv[]){
         outputFileZA = fopen("ZA.txt", "w+");
     }
     //extração dos dados do arquivo de pacientes
-
+    char name[60];
+    char sex[2];
+    char birthDay[11];
+    char lastConsultation[11];
     patient newPatient;
     while(1){
         char *nextLine = readFileLine(inputFile, 150);
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia
             break;
         }
-        char name[60];
-        char sex[2];
-        char birthDay[11];
-        char lastConsultation[11];
         sscanf(nextLine, "<%[^,], %1[MF], %10[0-9/], %10[0-9/]>", name, sex, birthDay, lastConsultation);
         newPatient = createPatient(name, sex, birthDay, lastConsultation);
-        printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s'\n", name, sex, birthDay, lastConsultation);
-        printPatient(newPatient);
+        // printf("NOME: '%s', SEXO: '%s', NASCIMENTO: '%s', ULTIMA CONSULTA: '%s'\n", name, sex, birthDay, lastConsultation);
+        // printPatient(newPatient);
         addNode(newPatient);
     }
     sortList();
-    display();
     fclose(inputFile);
     //funcionamento do software
     int option = 0;
@@ -239,30 +237,37 @@ int main(int argc, char *argv[]){
         printf("3 - fechar\n");
         printf("OQUE DESEJA FAZER? ");
         scanf("%d", &option);
+        int c;
+        while ((c = getchar()) != '\n' && c != EOF);
         switch(option){
             case 1:
-                // char name[60] = "";
-                // char sex[1] = "";
-                // char birthDay[11] = "";
-                // char lastConsultation[11] = "";
-                // printf("Digite o nome: ");
-                // gets(name);
-                // printf("\nDigite o sexo: ");
-                // gets(sex);
-                // printf("\nDigite data de nascimento: ");
-                // gets(birthDay);
-                // printf("\nDigite data de ultima consulta: ");
-                // gets(lastConsultation);
-                // newPatient = createPatient(name, sex, birthDay, lastConsultation);
-                // addNode(newPatient);
+                printf("\n");
+                printf("Digite o nome: ");
+                gets(name);
+                printf("Digite o sexo: ");
+                gets(sex);
+                printf("Digite data de nascimento: ");
+                gets(birthDay);
+                printf("Digite data de ultima consulta: ");
+                gets(lastConsultation);
+                newPatient = createPatient(name, sex, birthDay, lastConsultation);
+                addNode(newPatient);
+                sortList();
+                display();
                 break;
             case 2:
                 //function
                 break;
+            case 3:
+                printf("\nAT%c LOGO!", 144);
+                break;
+            default:
+                printf("\nOP%c%cO N%cO EXISTE!\n", 128, 199, 199);
         }
         printf("\n");
     }while(option != 3);
     //fecha arquivos
     fclose(outputFileAZ);
     fclose(outputFileZA);
+    return 0;
 }
