@@ -6,10 +6,7 @@
 !README.md
 !exec.bat
 !exec.sh
-!atv 1/
-!atv 2/
-!atv 3/
+!atividades avaliativas/
+!atividades avaliativas/*
+!atividades avaliativas/*/*
 !sala de aula/
-!*visita.txt
-!*enunciado.pdf
-!*pacientes.txt
