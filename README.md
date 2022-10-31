@@ -1,2 +1,2 @@
 # DATA_STRUCTURE
-Este repositorio resolve exercicios propostos na sala de aula de minha faculdade (UTFPR), na matéria de Estrutura de dados 1.
+Este repositorio possui resolução de exercicios propostos e atividades avaliativas na matéria de Estrutura de dados 1 de minha faculdade.
