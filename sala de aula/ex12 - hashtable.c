@@ -26,9 +26,8 @@ HashTable createHashTable(unsigned long seed){
 }
 
 //algoritmos de hash
-//para fazer buscas o ideal é não possuir colisões e ser rápido
-//para uso de senhas é ideal ser irreversível e velocidade nem muito lenta nem muito rápida
-//alguns algoritmos de hash: md4, md5, sha-1, sha-256, Whirlpool, bcrypt, argon2
+//para fazer buscas o ideal é não possuir colisões nem agrupamentos e ser rápido
+//os algoritmos mais famosos para busca são: Flajolet-Martin, HyperLogLog
 
 uint64_t fnv1a(struct hashtable *table, const char* key) {
     uint64_t hash = table->seed;
@@ -39,7 +38,7 @@ uint64_t fnv1a(struct hashtable *table, const char* key) {
     return hash;
 }
 
-int appendHashTable(struct hashtable *table, char *key, int data){
+uint64_t appendHashTable(struct hashtable *table, char *key, int data){
     uint64_t generatedHash = fnv1a(table, key);
     int appendIndex = generatedHash%table->seed;
     // struct hashobj newHashObject;
@@ -49,15 +48,13 @@ int appendHashTable(struct hashtable *table, char *key, int data){
     // if(table->values[appendIndex] == NULL){
     //     table->values[appendIndex] = newHashObject;
     // }
-    return appendIndex;
+    return generatedHash;
 }
 
 
 
 int main(){
-
     struct hashtable table = createHashTable(16);
-
     printf("teste = %d\n", appendHashTable(&table, "a", 100));
     printf("teste = %d\n", appendHashTable(&table, "b", 100));
     printf("teste = %d\n", appendHashTable(&table, "c", 100));
