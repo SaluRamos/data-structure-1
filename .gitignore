@@ -2,6 +2,7 @@
 *
 #except
 !*.c
+!*.h
 !.gitignore
 !README.md
 !exec.bat
@@ -10,3 +11,5 @@
 !atividades avaliativas/*
 !atividades avaliativas/*/*
 !sala de aula/
+!sala de aula/my/
+!sala de aula/md5/
