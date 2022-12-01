@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-char *str_replace(char *orig, char *rep, char *with) {
+char *replace(char *orig, char *rep, char *with) {
     char *result;
     char *ins;
     char *tmp;
