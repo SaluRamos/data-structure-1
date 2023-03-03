@@ -1,5 +1,5 @@
 cls
-gcc -Wall -o "main" "atividades avaliativas/atv 4/ex1.c" -static
+gcc -Wall -o "main" "sala de aula/revisao/ex2 - arquivos.c" -static
 main.exe
 PAUSE
 cls
