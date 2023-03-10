@@ -9,7 +9,7 @@ typedef struct
     int y;
 } point;
 
-void increment_point(point *v){
+void incrementPoint(point *v){
     (*v).x = (*v).x + 1; //método 1 de acessar atributos de uma struct ponteiro
     v -> y = (v -> y) + 1; //método 2 de acessar atributos de uma struct ponteiro
 }
@@ -18,7 +18,7 @@ int main(void){
     point p1;
     p1.x = 3;
     p1.y = 5;
-    increment_point(&p1);
+    incrementPoint(&p1);
     printf("Coordenadas de p1: x = %d, y = %d", p1.x, p1.y);
     return 1;
 }
