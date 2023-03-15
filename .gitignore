@@ -3,6 +3,7 @@
 #except
 !*.c
 !*.h
+!*.txt
 !.gitignore
 !README.md
 !exec.bat
