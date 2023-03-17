@@ -55,7 +55,7 @@ employee createEmployee(char *name, address adrs, int salary, char *civilState, 
 }
 
 void printEmployee(employee slave) {
-    printf("{%s}; {%s; %s; %s}; %d; %s; %d; %s}\n", slave.name, slave.adrs.street, slave.adrs.city, slave.adrs.state, slave.salary, slave.civilState, slave.age, slave.sex);
+    printf("{%s; {%s; %s; %s} ; %d; %s; %d; %s}\n", slave.name, slave.adrs.street, slave.adrs.city, slave.adrs.state, slave.salary, slave.civilState, slave.age, slave.sex);
 }
 
 int main(int argc, char *argv[]) {
@@ -68,9 +68,9 @@ int main(int argc, char *argv[]) {
     }
 
     char name[60];
-    int salary;
+    int salary = 0;
     char civilState[20];
-    int age;
+    int age = 0;
     char sex[1];
     char state[20];
     char city[30];
@@ -83,9 +83,10 @@ int main(int argc, char *argv[]) {
             break;
         }
         //{nome; {rua; cidade; estado} ; salario ; estado civil ; idade; sexo}
-        sscanf(nextLine, "{%[^;]; {%[^;]; %[^;]; %[^}]}; %[0-9]; %[^;]; %[0-9]; %1[MF]}", name, street, city, state, salary, civilState, age, sex);
+        sscanf(nextLine, "{%[^;]; {%[^;]; %[^;]; %[^}]} ; %d; %[^;]; %d; %[^}]}", name, street, city, state, &salary, civilState, &age, sex);
         employeeAddress = createAddress(street, city, state);
         newEmployee = createEmployee(name, employeeAddress, salary, civilState, age, sex);
+        printf("\n%s\n", nextLine);
         printEmployee(newEmployee);
     }
 
