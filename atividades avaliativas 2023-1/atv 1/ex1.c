@@ -4,19 +4,19 @@
 #include <stdlib.h>
 #include <string.h>
 
-typedef struct {
-    char state[20]; //alteração: usar um array de caracteres para guardar o estado
-    char city[30]; //alteração: usar um array de caracteres para guardar a cidade
-    char street[30]; //alteração: usar um array de caracteres para guardar a rua
+typedef struct{
+    char state[20];
+    char city[30];
+    char street[30];
 } address;
 
-typedef struct {
-    char name[60]; //alteração: usar um array de caracteres para guardar o nome
+typedef struct{
+    char name[60];
     address adrs;
     int salary;
-    char civilState[20]; //alteração: usar um array de caracteres para guardar o estado civil
+    char civilState[20];
     int age;
-    char sex[1]; //alteração: usar um array de caracteres para guardar o sexo e definir tamanho 2 para incluir o caractere de terminação de string '\0'
+    char sex[1];
 } employee;
 
 //abstração para ler próxima linha de um arquivo
@@ -35,7 +35,7 @@ char* readFileLine(FILE *f, int lineMaxSize){
     return line;
 }
 
-address createAddress(char *street, char *city, char *state) {
+address createAddress(char *street, char *city, char *state){
     address newAddress;
     strcpy(newAddress.street, street);
     strcpy(newAddress.city, city);
@@ -43,7 +43,7 @@ address createAddress(char *street, char *city, char *state) {
     return newAddress;
 }
 
-employee createEmployee(char *name, address adrs, int salary, char *civilState, int age, char *sex) { //alteração: corrigir o tipo do parâmetro salary de float para int
+employee createEmployee(char *name, address adrs, int salary, char *civilState, int age, char *sex){
     employee newEmployee;
     strcpy(newEmployee.name, name);
     newEmployee.adrs = adrs;
@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
     int salary = 0;
     char civilState[20];
     int age = 0;
-    char sex[1];
+    char sex[2];
     char state[20];
     char city[30];
     char street[30];
@@ -82,7 +82,6 @@ int main(int argc, char *argv[]) {
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia
             break;
         }
-        //{nome; {rua; cidade; estado} ; salario ; estado civil ; idade; sexo}
         sscanf(nextLine, "{%[^;]; {%[^;]; %[^;]; %[^}]} ; %d; %[^;]; %d; %[^}]}", name, street, city, state, &salary, civilState, &age, sex);
         employeeAddress = createAddress(street, city, state);
         newEmployee = createEmployee(name, employeeAddress, salary, civilState, age, sex);
