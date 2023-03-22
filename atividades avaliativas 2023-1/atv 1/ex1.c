@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
         if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia
             break;
         }
-        sscanf(nextLine, "{%[^;]; {%[^;]; %[^;]; %[^}]} ; %d; %[^;]; %d; %[^}]}", name, street, city, state, &salary, civilState, &age, sex);
+        sscanf(nextLine, "{%59[^;]; {%29[^;]; %29[^;]; %19[^}]} ; %d; %19[^;]; %d; %1[^}]}", name, street, city, state, &salary, civilState, &age, sex);
         employeeAddress = createAddress(street, city, state);
         newEmployee = createEmployee(name, employeeAddress, salary, civilState, age, sex);
         printf("\n%s\n", nextLine);
