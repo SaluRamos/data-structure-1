@@ -4,6 +4,7 @@
 !*.c
 !*.h
 !*.txt
+!*.csv
 !*.pdf
 !.gitignore
 !README.md
