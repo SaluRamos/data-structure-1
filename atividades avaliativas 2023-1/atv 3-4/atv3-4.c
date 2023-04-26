@@ -4,7 +4,9 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include <stdbool.h>
 #include <windows.h>
+#include <ctype.h>
 
 #define queueMaxSize 15
 
@@ -44,19 +46,26 @@ void addElementToList(sortedDoublyLinkedList* list, client value){
         list->tail = newNode;
     }else{ //insertion sort
         client cache;
+        bool appendFirst = false;
         node* current = list->head;
         while(current->next != NULL){
-            if(strcmp(current->data.name,value.name) >= 0){//current igual ou maior
-                cache = current->data;
-                if(cache.name == NULL){    
+            if(strcmp(current->data.name, value.name) > 0){//current igual ou maior
+            //salva o atual
+            //aplica novo valor
+                if(appendFirst == false){    
+                    cache = current->data;
                     current->data = value;
+                    appendFirst = true;
                 }else{
+                    client cache2;
+                    cache2 = current->data;
                     current->data = cache;
+                    cache = cache2;
                 }
             }
             current = current->next;
         }
-        if(cache.name != NULL){  
+        if(appendFirst == true){  
             newNode->data = cache;
         }
         current->next = newNode;  
@@ -74,6 +83,7 @@ void printList(sortedDoublyLinkedList* list){
         current = current->next;
     }
     printf("----------------------\n");
+    Sleep(500);
 }
 
 //abstração para ler próxima linha de um arquivo
@@ -99,9 +109,57 @@ char* readFileLine(FILE *f, int lineMaxSize){
 
 
 
+char* removeAccents(char* str){
+    const char* withAccents = "áéíóúàèìòùâêîôûãõçÁÉÍÓÚÀÈÌÒÙÂÊÎÔÛÃÕÇ";
+    const char* noAccents = "aeiouaeiouaeiouaocaeiouaeiouaeiouaoc";
+    char* p = str;
+    while(*p != '\0') {
+        char* assent = strchr(withAccents, *p);
+        if(assent != NULL){
+            *p = noAccents[assent - withAccents];
+        }
+        p++;
+    }
+    return str;
+}
 
-
-
+int compareStringAZ(char str1[], char str2[]){
+    //transforma caracteres das strings em minusculas
+    char lowerstr1[strlen(str1)];
+    for(int i = 0; i < strlen(str1); i++) {
+        lowerstr1[i] = tolower(str1[i]);
+    }
+    lowerstr1[strlen(str1)] = '\0';
+    char lowerstr2[strlen(str2)];
+    for(int i = 0; i < strlen(str2); i++) {
+        lowerstr2[i] = tolower(str2[i]);
+    }
+    lowerstr2[strlen(str2)] = '\0';
+    //remove acentos
+    removerAcentos(lowerstr1);
+    removeAccents(lowerstr2);
+    //descobre string de menor tamanho
+    int maxCompare = 0;
+    int sizestr1 = strlen(str1);
+    int sizestr2 = strlen(str2);
+    if(sizestr1 > sizestr2){
+        maxCompare = sizestr2;
+    }else{
+        maxCompare = sizestr1;
+    }
+    printf("%d, %s, %s\n", maxCompare, lowerstr1, lowerstr2);
+    //1, str1 > str2
+    //0, str1 = str2
+    //-1, str1 < str2
+    // if(result == 0) {
+    //     if(sizestr1 < sizestr2) {
+    //         result = -1;
+    //     } else if(sizestr1 > sizestr2) {
+    //         result = 1;
+    //     }
+    // }
+    return 0;
+}
 
 client createClient(char* name, char* birthday, char *condition){
     client data;
@@ -110,7 +168,6 @@ client createClient(char* name, char* birthday, char *condition){
     strcpy(data.condition, condition);
     return data;
 }
-
 
 void readRegister(sortedDoublyLinkedList* list){
     FILE *registersFile;
@@ -125,9 +182,8 @@ void readRegister(sortedDoublyLinkedList* list){
         }
         sscanf(nextLine, "%60[^,],%10[^,],%1[^,]", name, birthday, condition);
         printf("adicionando nome %s\n", name);
-        printList(list);
         addElementToList(list, createClient(name, birthday, condition));
-        Sleep(1);
+        printList(list);
     }
 }
 
@@ -150,21 +206,23 @@ void saveRegister(){
 
 int main(){
 
-    sortedDoublyLinkedList* registers = createSortedDoublyLinkedList();
-    readRegister(registers);
+    compareStringAZ("teÁTe", "Loo");
 
-    printf("(1) Realizar novo cadastro\n");
-    printf("(2) Buscar cadastro\n");
-    printf("(3) Alterar dados do cadastro\n");
-    printf("(4) Sair\n\n");
+    // sortedDoublyLinkedList* registers = createSortedDoublyLinkedList();
+    // readRegister(registers);
 
-    int selectedOption = 0;
-    while(1){
-        printf("Digite uma op%c%co: ", 135, 198);
-        scanf("%d", &selectedOption);
-        if(selectedOption > 0 && selectedOption < 5){
-            break;
-        }
-    }
+    // printf("(1) Realizar novo cadastro\n");
+    // printf("(2) Buscar cadastro\n");
+    // printf("(3) Alterar dados do cadastro\n");
+    // printf("(4) Sair\n\n");
+
+    // int selectedOption = 0;
+    // while(1){
+    //     printf("Digite uma op%c%co: ", 135, 198);
+    //     scanf("%d", &selectedOption);
+    //     if(selectedOption > 0 && selectedOption < 5){
+    //         break;
+    //     }
+    // }
     
 }
