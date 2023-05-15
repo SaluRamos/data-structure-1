@@ -39,7 +39,10 @@ sortedDoublyLinkedList* createSortedDoublyLinkedList() {
 void addElementToList(sortedDoublyLinkedList* list, client value){
     node* newNode = malloc(sizeof(node));
     newNode->data = value;
+    newNode->next = NULL;
+    newNode->previous = NULL;
     if(list->head == NULL){
+        printf("primeiro elemento!\n");
         newNode->next = NULL;
         newNode->previous = NULL;
         list->head = newNode;
@@ -47,20 +50,28 @@ void addElementToList(sortedDoublyLinkedList* list, client value){
     }else{ //insertion sort
         node* current = list->head;
         bool added = false;
+        int atual = 0;
         while(current->next != NULL){
-            printf("teste\n");
             //se for igual ou menor adiciona e encerra
             if(strcmp(value.name, current->data.name) <= 0){
                 newNode->next = current;
-                newNode->previous = current->previous;
-                current->previous->next = newNode;
+                if(atual == 0){
+                    // printf("head\n");
+                    list->head = newNode;
+                }else{
+                    // printf("meio\n");
+                    newNode->previous = current->previous;
+                    current->previous->next = newNode;
+                }
                 current->previous = newNode;
                 added = true;
                 break;
             }
             current = current->next; //pula de elemento
+            atual++;
         }
         if(added == false){
+            // printf("tail!\n");
             newNode->previous = list->tail;
             list->tail->next = newNode;
             list->tail = newNode;
@@ -74,10 +85,10 @@ void printList(sortedDoublyLinkedList* list){
     printf("----------------------\n");
     while(current != NULL){
         printf("%s, %s, %s (next: %s, previous: %s, head: %s, tail: %s)\n", current->data.name, current->data.birthday, current->data.condition, current->next->data.name, current->previous->data.name, list->head->data.name, list->tail->data.name);
+        // printf("%s, %s, %s\n", current->data.name, current->data.birthday, current->data.condition);
         current = current->next;
     }
     printf("----------------------\n");
-    Sleep(500);
 }
 
 //abstração para ler próxima linha de um arquivo
@@ -157,10 +168,9 @@ void readRegister(sortedDoublyLinkedList* list){
             break;
         }
         sscanf(nextLine, "%60[^,],%10[^,],%1[^,]", name, birthday, condition);
-        printf("adicionando nome %s\n", name);
         addElementToList(list, createClient(name, birthday, condition));
-        printf("nome adicionado\n");
-        printList(list);
+        // printf("adicionando nome %s\n", name);
+        // printList(list);
     }
 }
 
@@ -213,5 +223,5 @@ int main(){
 
         }
     }
-    
+
 }
