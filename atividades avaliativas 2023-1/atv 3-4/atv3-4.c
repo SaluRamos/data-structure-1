@@ -5,7 +5,7 @@
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
-#include <windows.h>
+// #include <windows.h>
 #include <ctype.h>
 
 #define queueMaxSize 15
@@ -42,7 +42,7 @@ void addElementToList(sortedDoublyLinkedList* list, client value){
     newNode->next = NULL;
     newNode->previous = NULL;
     if(list->head == NULL){
-        printf("primeiro elemento!\n");
+        // printf("primeiro elemento!\n");
         newNode->next = NULL;
         newNode->previous = NULL;
         list->head = newNode;
@@ -84,8 +84,8 @@ void printList(sortedDoublyLinkedList* list){
     node* current = list->head;
     printf("----------------------\n");
     while(current != NULL){
-        printf("%s, %s, %s (next: %s, previous: %s, head: %s, tail: %s)\n", current->data.name, current->data.birthday, current->data.condition, current->next->data.name, current->previous->data.name, list->head->data.name, list->tail->data.name);
-        // printf("%s, %s, %s\n", current->data.name, current->data.birthday, current->data.condition);
+        // printf("%s, %s, %s (next: %s, previous: %s, head: %s, tail: %s)\n", current->data.name, current->data.birthday, current->data.condition, current->next->data.name, current->previous->data.name, list->head->data.name, list->tail->data.name);
+        printf("%s, %s, %s\n", current->data.name, current->data.birthday, current->data.condition);
         current = current->next;
     }
     printf("----------------------\n");
@@ -170,8 +170,8 @@ void readRegister(sortedDoublyLinkedList* list){
         sscanf(nextLine, "%60[^,],%10[^,],%1[^,]", name, birthday, condition);
         addElementToList(list, createClient(name, birthday, condition));
         // printf("adicionando nome %s\n", name);
-        // printList(list);
     }
+    printList(list);
 }
 
 void createRegister(){
@@ -199,7 +199,15 @@ int main(){
     printf("(1) Realizar novo cadastro\n");
     printf("(2) Buscar cadastro\n");
     printf("(3) Alterar dados do cadastro\n");
-    printf("(4) Sair\n\n");
+    printf("(4) Montar fila de espera\n");
+    printf("(5) Próximo a ir ao buffet\n");
+    printf("(6) Sair do restaurante\n");
+    printf("(7) Imprimir fila D\n");
+    printf("(8) Imprimir fila H\n");
+    printf("(9) Imprimir fila N\n");
+    printf("(10) Imprimir fila de espera\n");
+    printf("(11) Imprimir todas as filas\n");
+    printf("(12) Sair\n\n");
 
     int selectedOption = 0;
     while(1){
