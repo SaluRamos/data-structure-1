@@ -8,13 +8,21 @@
 // #include <windows.h>
 #include <ctype.h>
 
-#define queueMaxSize 15
+#define maxQueueSize 15
 
 typedef struct client{
     char name[61];
     char birthday[11]; //dd/mm/aaaa
     char condition[2]; //N, D ou H
 }client;
+
+client createClient(char* name, char* birthday, char* condition){
+    client data;
+    strcpy(data.name, name);
+    strcpy(data.birthday, birthday);
+    strcpy(data.condition, condition);
+    return data;
+}
 
 typedef struct node{
     client data;
@@ -79,6 +87,7 @@ void addElementToList(sortedDoublyLinkedList* list, client value){
     }
 }
 
+//busca por um cliente nos cadastros pelo nome e retorna seu ponteiro
 client* searchList(sortedDoublyLinkedList* list, char* name){
     node* current = list->head;
     while(current->next != NULL){
@@ -125,21 +134,6 @@ void stringToUpper(char* str) {
     }
 }
 
-
-
-
-
-
-
-
-client createClient(char* name, char* birthday, char* condition){
-    client data;
-    strcpy(data.name, name);
-    strcpy(data.birthday, birthday);
-    strcpy(data.condition, condition);
-    return data;
-}
-
 void readRegister(sortedDoublyLinkedList* list){
     FILE *registersFile;
     registersFile = fopen("clientes.csv", "r");
@@ -148,42 +142,212 @@ void readRegister(sortedDoublyLinkedList* list){
     char condition[2];
     while(1){
         char *nextLine = readFileLine(registersFile, 72);
-        if(strcmp(nextLine, "") == 0){//verifica se a linha é vazia
+        if(strcmp(nextLine, "") == 0){ //verifica se a linha é vazia
             break;
         }
         sscanf(nextLine, "%60[^,],%10[^,],%1[^,]", name, birthday, condition);
         addElementToList(list, createClient(name, birthday, condition));
-        //printf("adicionando nome %s\n", name);
     }
-    //printList(list);
 }
 
-void createRegister(){
-
+void createRegister(sortedDoublyLinkedList* list){
+    char name[61] = "";
+    char birthday[11] = "";
+    char condition[2] = "";
+    int day = 0;
+    int month = 0;
+    int year = 0;
+    printf("Digite o nome completo: ");
+    fgets(name, 61, stdin);
+    name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
+    stringToUpper(name);
+    printf("Digite a data de nascimento: ");
+    fgets(birthday, 11, stdin);
+    birthday[strcspn(birthday, "\n")] = '\0'; //Remove o \n da string
+    getchar(); //consumir o caractere de nova linha pendente no buffer
+    printf("Digite a condicao de saude: ");
+    fgets(condition, 2, stdin);
+    condition[strcspn(condition, "\n")] = '\0'; //Remove o \n da string
+    stringToUpper(condition);
+    //etapa de verificação
+    sscanf(birthday, "%d/%d/%d", &day, &month, &year);
+    if(day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2023){
+        printf("data de aniversario invalida!\n");
+    }else if(strcmp(condition, "H") != 0 && strcmp(condition, "D") != 0 && strcmp(condition, "N") != 0){
+        printf("condicao de saude invalida!\n");
+    }else{
+        addElementToList(list, createClient(name, birthday, condition));
+        printf("cadastro realizado com sucesso!\n");
+    }
 }
 
-void searchRegister(){
-
+void searchRegister(sortedDoublyLinkedList* list){
+    client* result;
+    char name[61] = "";
+    printf("Digite o nome completo: ");
+    fgets(name, 61, stdin);
+    name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
+    stringToUpper(name);
+    printf("Estamos verificando nosso sistema...\n");
+    result = searchList(list, name);
+    if(result == NULL){
+        printf("Cadastro nao encontrado!\n");
+    }else{
+        printf("Cadastro encontrado!\n");
+        printf("----------------------\n");
+        printf("Nome: %s\n", result->name);
+        printf("Data de nascimento: %s\n", result->birthday);
+        printf("Condicao de saude: %s\n", result->condition);
+    }
 }
 
-void updateRegister(){
-
+void updateRegister(sortedDoublyLinkedList* list){
+    client* result;
+    int selectedOption = 0;
+    char name[61] = "";
+    char birthday[11] = "";
+    char condition[2] = "";
+    int day = 0;
+    int month = 0;
+    int year = 0;
+    printf("Digite o nome completo: ");
+    fgets(name, 61, stdin);
+    name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
+    stringToUpper(name);
+    printf("Estamos verificando nosso sistema...\n");
+    result = searchList(list, name);
+    if(result == NULL){
+        printf("Cadastro nao encontrado!\n");
+    }else{
+        printf("Cadastro encontrado!\n");
+        printf("--------------------------\n");
+        printf("(1) Nome\n");
+        printf("(2) Data de nascimento\n");
+        printf("(3) Condicao de saude\n");
+        printf("Oque deseja alterar? ");
+        scanf("%d", &selectedOption);
+        getchar(); //consumir o caractere de nova linha pendente no buffer
+        switch (selectedOption){
+            case 1:
+                printf("Digite novo nome: ");
+                fgets(name, 61, stdin);
+                name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
+                stringToUpper(name);
+                strcpy(result->name, name);
+                printf("Cadastro atualizado com sucesso!\n");
+                break;
+            case 2:
+                printf("Digite nova data de nascimento: ");
+                fgets(birthday, 11, stdin);
+                birthday[strcspn(birthday, "\n")] = '\0'; //Remove o \n da string
+                sscanf(birthday, "%d/%d/%d", &day, &month, &year);
+                if(day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2023){
+                    printf("data de aniversario invalida!\n");
+                }else{
+                    strcpy(result->birthday, birthday);
+                    printf("Cadastro atualizado com sucesso!\n");
+                }
+                break;
+            case 3:
+                printf("Digite nova condicao de saude: ");
+                fgets(condition, 2, stdin);
+                condition[strcspn(condition, "\n")] = '\0'; //Remove o \n da string
+                stringToUpper(condition);
+                if(strcmp(condition, "H") != 0 && strcmp(condition, "D") != 0 && strcmp(condition, "N") != 0){
+                    printf("condicao de saude invalida!\n");
+                }else{
+                    strcpy(result->condition, condition);
+                    printf("Cadastro atualizado com sucesso!\n");
+                }
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                break;
+        }
+    }
 }
 
-void saveRegister(){
+typedef struct queue{
+    client *array;
+    int start;
+    int end;
+    int atualSize;
+} queue;
 
+//inicializa as variaveis da queue
+queue* createQueue(){
+    queue* newQueue = malloc(sizeof(queue));
+    newQueue->array = (client*) malloc(sizeof(client)*maxQueueSize);
+    newQueue->start = 0;
+    newQueue->end = 0; //o end não é onde esta o ultimo elemento, e sim onde vai ser adicionado o proximo elemento
+    newQueue->atualSize = 0;
+    return newQueue;
 }
 
+//adiciona um elemento em cima da queue
+void queueAppend(queue *queue_, client newValue){
+    if(queue_->atualSize + 1 <= maxQueueSize){
+        queue_->array[queue_->end] = newValue;
+        queue_->atualSize += 1;
+        if(queue_->end + 1 >= maxQueueSize){
+            queue_->end = 0;
+        }else{
+            queue_->end += 1;
+        }
+    }
+}
+
+//remove o elemento de baixo da queue
+void queuePop(queue *queue_){
+    if(queue_->atualSize > 0){
+        if(queue_->start + 1 > maxQueueSize){
+            queue_->start = 0;
+        }else{
+            queue_->start += 1;
+        }
+        queue_->atualSize -= 1;
+    }
+}
+
+//imprime informações da queue
+void printQueue(queue *queue_){
+    printf("----------------------");
+    if(queue_->atualSize == 0){
+        printf("esta fila nao possui nenhum elemento\n");
+    }else{
+        int place = 1;
+        if(queue_->start < queue_->end){
+            for(int i = queue_->start; i < queue_->end; i++){
+                printf("\n%d - %s", place, queue_->array[i].name);
+                place += 1;
+            }
+        }else{
+            for(int i = queue_->start; i <= maxQueueSize - 1; i++){
+                printf("\n%d - %s", place, queue_->array[i].name);
+                place += 1;
+            }
+            for(int i = 0; i < queue_->end; i++){
+                printf("\n%d - %s", place, queue_->array[i].name);
+                place += 1;
+            }
+        }
+    }
+    printf("\n----------------------\n");
+}
 
 int main(){
 
     sortedDoublyLinkedList* registers = createSortedDoublyLinkedList();
     readRegister(registers);
+    queue* waitQueue = createQueue();
+    queue* dQueue = createQueue();
+    queue* hQueue = createQueue();
+    queue* nQueue = createQueue();
 
     printf("(1) Realizar novo cadastro\n");
     printf("(2) Buscar cadastro\n");
     printf("(3) Alterar dados do cadastro\n");
-    printf("(4) Montar fila de espera\n"); //realizar a leitura de DadosChegada.txt, verificar quais clientes ir˜ao para fila de espera, quais entrarão imediatamente no restaurante e quais não serão servidos
+    printf("(4) Montar fila de espera\n"); //realizar a leitura de DadosChegada.txt, verificar quais clientes irão para fila de espera, quais entrarão imediatamente no restaurante e quais não serão servidos
     printf("(5) Proximo a ir ao buffet\n"); //tirar uma pessoa da fila de espera e colocá-la na fila do buffet correspondente à sua condição de saúde (se houver espaço no restaurante)
     printf("(6) Sair do restaurante\n"); //quando um cliente deixa o restaurante, avisar qual cliente está saindo e atualizar a fila repectiva
     printf("(7) Imprimir fila D\n");
@@ -194,14 +358,7 @@ int main(){
     printf("(12) Imprimir lista de cadastro\n");
     printf("(13) Sair\n\n");
 
-    client* result;
     int selectedOption = 0;
-    char name[61] = "";
-    char birthday[11] = "";
-    char condition[2] = "";
-    int day = 0;
-    int month = 0;
-    int year = 0;
     while(1){
         printf("Digite uma opcao: ");
         scanf("%d", &selectedOption);
@@ -209,102 +366,13 @@ int main(){
         printf("\n");
         switch(selectedOption){
             case 1:
-                printf("Digite o nome completo: ");
-                fgets(name, 61, stdin);
-                name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
-                stringToUpper(name);
-                printf("Digite a data de nascimento: ");
-                fgets(birthday, 11, stdin);
-                birthday[strcspn(birthday, "\n")] = '\0'; //Remove o \n da string
-                getchar(); //consumir o caractere de nova linha pendente no buffer
-                printf("Digite a condicao de saude: ");
-                fgets(condition, 2, stdin);
-                condition[strcspn(condition, "\n")] = '\0'; //Remove o \n da string
-                stringToUpper(condition);
-                //etapa de verificação
-                sscanf(birthday, "%d/%d/%d", &day, &month, &year);
-                if(day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2023){
-                    printf("data de aniversario invalida!\n");
-                }else if(strcmp(condition, "H") != 0 && strcmp(condition, "D") != 0 && strcmp(condition, "N") != 0){
-                    printf("condicao de saude invalida!\n");
-                }else{
-                    addElementToList(registers, createClient(name, birthday, condition));
-                    printf("cadastro realizado com sucesso!\n");
-                }
+                createRegister(registers);
                 break;
             case 2:
-                printf("Digite o nome completo: ");
-                fgets(name, 61, stdin);
-                name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
-                stringToUpper(name);
-                printf("Estamos verificando nosso sistema...\n");
-                result = searchList(registers, name);
-                if(result == NULL){
-                    printf("Cadastro nao encontrado!\n");
-                }else{
-                    printf("Cadastro encontrado!\n");
-                    printf("--------------------------\n");
-                    printf("Nome: %s\n", result->name);
-                    printf("Data de nascimento: %s\n", result->birthday);
-                    printf("Condicao de saude: %s\n", result->condition);
-                }
+                searchRegister(registers);
                 break;
             case 3:
-                printf("Digite o nome completo: ");
-                fgets(name, 61, stdin);
-                name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
-                stringToUpper(name);
-                printf("Estamos verificando nosso sistema...\n");
-                result = searchList(registers, name);
-                if(result == NULL){
-                    printf("Cadastro nao encontrado!\n");
-                }else{
-                    printf("Cadastro encontrado!\n");
-                    printf("--------------------------\n");
-                    printf("(1) Nome\n");
-                    printf("(2) Data de nascimento\n");
-                    printf("(3) Condicao de saude\n");
-                    printf("Oque deseja alterar? ");
-                    scanf("%d", &selectedOption);
-                    getchar(); //consumir o caractere de nova linha pendente no buffer
-                    switch (selectedOption){
-                        case 1:
-                            printf("Digite novo nome: ");
-                            fgets(name, 61, stdin);
-                            name[strcspn(name, "\n")] = '\0'; //Remove o \n da string
-                            stringToUpper(name);
-                            strcpy(result->name, name);
-                            printf("Cadastro atualizado com sucesso!\n");
-                            break;
-                        case 2:
-                            printf("Digite nova data de nascimento: ");
-                            fgets(birthday, 11, stdin);
-                            birthday[strcspn(birthday, "\n")] = '\0'; //Remove o \n da string
-                            sscanf(birthday, "%d/%d/%d", &day, &month, &year);
-                            if(day < 1 || day > 31 || month < 1 || month > 12 || year < 1900 || year > 2023){
-                                printf("data de aniversario invalida!\n");
-                            }else{
-                                strcpy(result->birthday, birthday);
-                                printf("Cadastro atualizado com sucesso!\n");
-                            }
-                            break;
-                        case 3:
-                            printf("Digite nova condicao de saude: ");
-                            fgets(condition, 2, stdin);
-                            condition[strcspn(condition, "\n")] = '\0'; //Remove o \n da string
-                            stringToUpper(condition);
-                            if(strcmp(condition, "H") != 0 && strcmp(condition, "D") != 0 && strcmp(condition, "N") != 0){
-                                printf("condicao de saude invalida!\n");
-                            }else{
-                                strcpy(result->condition, condition);
-                                printf("Cadastro atualizado com sucesso!\n");
-                            }
-                            break;
-                        default:
-                            printf("Opcao invalida!\n");
-                            break;
-                    }
-                }
+                updateRegister(registers);
                 break;
             case 4:
                 break;
@@ -319,6 +387,7 @@ int main(){
             case 9:
                 break;
             case 10:
+                printQueue(waitQueue);
                 break;
             case 11:
                 break;
@@ -327,6 +396,10 @@ int main(){
                 break;
             case 13:
                 free(registers);
+                free(waitQueue);
+                free(hQueue);
+                free(dQueue);
+                free(nQueue);
                 return 0;
                 break;
             default:
