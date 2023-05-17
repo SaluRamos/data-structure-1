@@ -1,0 +1,10 @@
+Relatório do dia 17/5/2023
+
+Total de atendimentos: 45
+Hipertensos: 17
+Diabeticos: 10
+Saudaveis: 18
+
+Total de entrada (R$): 2120 (850 + 550 + 720)
+Total de custos de despesas (R$): 1310 (595 + 300 + 450)
+Lucro (R$): 810

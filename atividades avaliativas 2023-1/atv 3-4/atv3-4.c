@@ -5,10 +5,9 @@
 #include <string.h>
 #include <math.h>
 #include <stdbool.h>
+#include <time.h>
 // #include <windows.h>
 #include <ctype.h>
-
-#define maxQueueSize 15
 
 typedef struct client{
     char name[61];
@@ -140,7 +139,7 @@ void readRegister(sortedDoublyLinkedList* list){
     char name[61];
     char birthday[11];
     char condition[2];
-    while(1){
+    while(true){
         char *nextLine = readFileLine(registersFile, 72);
         if(strcmp(nextLine, "") == 0){ //verifica se a linha é vazia
             break;
@@ -148,6 +147,7 @@ void readRegister(sortedDoublyLinkedList* list){
         sscanf(nextLine, "%60[^,],%10[^,],%1[^,]", name, birthday, condition);
         addElementToList(list, createClient(name, birthday, condition));
     }
+    fclose(registersFile);
 }
 
 void createRegister(sortedDoublyLinkedList* list){
@@ -267,29 +267,69 @@ void updateRegister(sortedDoublyLinkedList* list){
     }
 }
 
+//estrutura de "data" para facilitar calculos
+typedef struct sTime{
+    int day;
+    int month;
+    int year;
+} sTime;
+
+//abstrai adquirir a data atual no formato "dd/mm/YYYY" ou "%d/%m/%Y"
+char* getAtualDate(){
+    static char atualDate[11];
+    time_t rawtime = time(NULL);
+    struct tm *ts = localtime(&rawtime);
+    strftime(atualDate, sizeof(atualDate), "%d/%m/%Y", ts);
+    return atualDate;
+}
+
+sTime stringToSTime(char *dateString){
+    sTime date;
+    date.day = 0;
+    date.month = 0;
+    date.year = 0;
+    sscanf(dateString, "%d/%d/%d", &date.day, &date.month, &date.year);
+    return date;
+}
+
+int getPatientAge(char* _fromDate){
+    sTime atualDate = stringToSTime(getAtualDate());
+    sTime fromDate = stringToSTime(_fromDate);
+    int age = atualDate.year - fromDate.year;
+    if(age < 0){
+        return 0;
+    }
+    if(fromDate.month <= atualDate.month && fromDate.day < atualDate.day && age > 0){
+        age -= 1;
+    }
+    return age;
+}
+
 typedef struct queue{
     client *array;
     int start;
     int end;
     int atualSize;
+    int maxSize;
 } queue;
 
 //inicializa as variaveis da queue
-queue* createQueue(){
+queue* createQueue(int maxSize){
     queue* newQueue = malloc(sizeof(queue));
-    newQueue->array = (client*) malloc(sizeof(client)*maxQueueSize);
+    newQueue->array = (client*) malloc(sizeof(client)*maxSize);
     newQueue->start = 0;
     newQueue->end = 0; //o end não é onde esta o ultimo elemento, e sim onde vai ser adicionado o proximo elemento
     newQueue->atualSize = 0;
+    newQueue->maxSize = maxSize;
     return newQueue;
 }
 
 //adiciona um elemento em cima da queue
-void queueAppend(queue *queue_, client newValue){
-    if(queue_->atualSize + 1 <= maxQueueSize){
-        queue_->array[queue_->end] = newValue;
+void queueAppend(queue *queue_, client *newValue){
+    if(queue_->atualSize + 1 <= queue_->maxSize){
+        queue_->array[queue_->end] = *newValue;
         queue_->atualSize += 1;
-        if(queue_->end + 1 >= maxQueueSize){
+        if(queue_->end + 1 >= queue_->maxSize){
             queue_->end = 0;
         }else{
             queue_->end += 1;
@@ -300,7 +340,7 @@ void queueAppend(queue *queue_, client newValue){
 //remove o elemento de baixo da queue
 void queuePop(queue *queue_){
     if(queue_->atualSize > 0){
-        if(queue_->start + 1 > maxQueueSize){
+        if(queue_->start + 1 > queue_->maxSize){
             queue_->start = 0;
         }else{
             queue_->start += 1;
@@ -310,10 +350,13 @@ void queuePop(queue *queue_){
 }
 
 //imprime informações da queue
-void printQueue(queue *queue_){
+void printQueue(queue *queue_, char info[]){
     printf("----------------------");
+    if(strcmp(info, "") != 0){
+        printf("\n%s", info);
+    }
     if(queue_->atualSize == 0){
-        printf("esta fila nao possui nenhum elemento\n");
+        printf("\nvazia!");
     }else{
         int place = 1;
         if(queue_->start < queue_->end){
@@ -322,7 +365,7 @@ void printQueue(queue *queue_){
                 place += 1;
             }
         }else{
-            for(int i = queue_->start; i <= maxQueueSize - 1; i++){
+            for(int i = queue_->start; i <= queue_->maxSize - 1; i++){
                 printf("\n%d - %s", place, queue_->array[i].name);
                 place += 1;
             }
@@ -335,31 +378,107 @@ void printQueue(queue *queue_){
     printf("\n----------------------\n");
 }
 
+typedef struct report{
+    int totalCalls;
+    int totalH;
+    int totalD;
+    int totalN;
+} report;
+
+report createReport(){
+    report newReport;
+    newReport.totalCalls = 0;
+    newReport.totalD = 0;
+    newReport.totalH = 0;
+    newReport.totalN = 0;
+    return newReport;
+}
+
+report createWaitQueue(queue *queue_, sortedDoublyLinkedList* list){
+    report todayReport = createReport();
+    client* result;
+    FILE *waitQueueFile;
+    waitQueueFile = fopen("DadosChegada.txt", "r");
+    while(true){
+        char *nextLine = readFileLine(waitQueueFile, 72);
+        if(strcmp(nextLine, "") == 0){ //verifica se a linha é vazia
+            break;
+        }
+        stringToUpper(nextLine);
+        result = searchList(list, nextLine);
+        if(result == NULL){
+            printf("(%s) Cadastro nao encontrado!\n", nextLine);
+        }else{
+            int clientAge = getPatientAge(result->birthday);
+            if(clientAge < 12){
+                printf("(%s) Cliente possui menos de 12 anos de idade (%d anos, nascimento %s)\n", nextLine, clientAge, result->birthday);
+            }else{
+                queueAppend(queue_, result);
+                todayReport.totalCalls += 1;
+                if(strcmp(result->condition, "H") == 0){
+                    todayReport.totalH += 1;
+                }else if(strcmp(result->condition, "D") == 0){
+                    todayReport.totalD += 1;
+                }else{
+                    todayReport.totalN += 1;
+                }
+                printf("(%s) Adicionado a fila de espera com sucesso!\n", nextLine);
+            }
+        }
+    }
+    fclose(waitQueueFile);
+    return todayReport;
+}
+
+void generateReport(report todayReport){
+    int todayDay = 0;
+    int todayMonth = 0;
+    int todayYear = 0;
+    sscanf(getAtualDate(), "%d/%d/%d", &todayDay, &todayMonth, &todayYear);
+    char filename[24];
+    snprintf(filename, sizeof(filename), "Relatorio_%d_%d_%04d.txt", todayDay, todayMonth, todayYear);
+    FILE *reportFile;
+    reportFile = fopen(filename, "w");
+    fprintf(reportFile, "Relatório do dia %d/%d/%d\n", todayDay, todayMonth, todayYear);
+    fprintf(reportFile, "\n");
+    fprintf(reportFile, "Total de atendimentos: %d\n", todayReport.totalCalls);
+    fprintf(reportFile, "Hipertensos: %d\n", todayReport.totalH);
+    fprintf(reportFile, "Diabeticos: %d\n", todayReport.totalD);
+    fprintf(reportFile, "Saudaveis: %d\n", todayReport.totalN);
+    fprintf(reportFile, "\n");
+    int totalIncome = todayReport.totalH*50 + todayReport.totalD*55 + todayReport.totalN*40;
+    fprintf(reportFile, "Total de entrada (R$): %d (%d + %d + %d)\n", totalIncome, todayReport.totalH*50, todayReport.totalD*55, todayReport.totalN*40);
+    int totalCost = todayReport.totalD*35 + todayReport.totalH*30 + todayReport.totalN*25;
+    fprintf(reportFile, "Total de custos de despesas (R$): %d (%d + %d + %d)\n", totalCost, todayReport.totalH*35, todayReport.totalD*30, todayReport.totalN*25);
+    fprintf(reportFile, "Lucro (R$): %d", totalIncome - totalCost);
+    fclose(reportFile);
+}
+
 int main(){
 
     sortedDoublyLinkedList* registers = createSortedDoublyLinkedList();
     readRegister(registers);
-    queue* waitQueue = createQueue();
-    queue* dQueue = createQueue();
-    queue* hQueue = createQueue();
-    queue* nQueue = createQueue();
-
-    printf("(1) Realizar novo cadastro\n");
-    printf("(2) Buscar cadastro\n");
-    printf("(3) Alterar dados do cadastro\n");
-    printf("(4) Montar fila de espera\n"); //realizar a leitura de DadosChegada.txt, verificar quais clientes irão para fila de espera, quais entrarão imediatamente no restaurante e quais não serão servidos
-    printf("(5) Proximo a ir ao buffet\n"); //tirar uma pessoa da fila de espera e colocá-la na fila do buffet correspondente à sua condição de saúde (se houver espaço no restaurante)
-    printf("(6) Sair do restaurante\n"); //quando um cliente deixa o restaurante, avisar qual cliente está saindo e atualizar a fila repectiva
-    printf("(7) Imprimir fila D\n");
-    printf("(8) Imprimir fila H\n");
-    printf("(9) Imprimir fila N\n");
-    printf("(10) Imprimir fila de espera\n");
-    printf("(11) Imprimir todas as filas\n");
-    printf("(12) Imprimir lista de cadastro\n");
-    printf("(13) Sair\n\n");
-
+    queue* waitQueue = createQueue(1000);
+    queue* dQueue = createQueue(15);
+    queue* hQueue = createQueue(15);
+    queue* nQueue = createQueue(15);
+    report todayReport;
     int selectedOption = 0;
-    while(1){
+
+    while(true){
+        printf("(1) Realizar novo cadastro\n");
+        printf("(2) Buscar cadastro\n");
+        printf("(3) Alterar dados do cadastro\n");
+        printf("(4) Montar fila de espera\n"); //realizar a leitura de DadosChegada.txt, verificar quais clientes irão para fila de espera, quais entrarão imediatamente no restaurante e quais não serão servidos
+        printf("(5) Proximo a ir ao buffet\n"); //tirar uma pessoa da fila de espera e colocá-la na fila do buffet correspondente à sua condição de saúde (se houver espaço no restaurante)
+        printf("(6) Sair do restaurante\n"); //quando um cliente deixa o restaurante, avisar qual cliente está saindo e atualizar a fila repectiva
+        printf("(7) Imprimir fila D\n");
+        printf("(8) Imprimir fila H\n");
+        printf("(9) Imprimir fila N\n");
+        printf("(10) Imprimir fila de espera\n");
+        printf("(11) Imprimir todas as filas\n");
+        printf("(12) Imprimir lista de cadastro\n");
+        printf("(13) Sair\n");
         printf("Digite uma opcao: ");
         scanf("%d", &selectedOption);
         getchar(); //consumir o caractere de nova linha pendente no buffer
@@ -375,21 +494,29 @@ int main(){
                 updateRegister(registers);
                 break;
             case 4:
+                todayReport = createWaitQueue(waitQueue, registers);
                 break;
             case 5:
                 break;
             case 6:
                 break;
             case 7:
+                printQueue(dQueue, "fila de diabeticos");
                 break;
             case 8:
+                printQueue(hQueue, "fila de hipertensos");
                 break;
             case 9:
+                printQueue(nQueue, "fila de saudaveis");
                 break;
             case 10:
-                printQueue(waitQueue);
+                printQueue(waitQueue, "fila de espera");
                 break;
             case 11:
+                printQueue(waitQueue, "fila de espera");
+                printQueue(dQueue, "fila de diabeticos");
+                printQueue(hQueue, "fila de hipertensos");
+                printQueue(nQueue, "fila de saudaveis");
                 break;
             case 12:
                 printList(registers);
@@ -400,6 +527,7 @@ int main(){
                 free(hQueue);
                 free(dQueue);
                 free(nQueue);
+                generateReport(todayReport);
                 return 0;
                 break;
             default:
