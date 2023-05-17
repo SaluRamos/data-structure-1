@@ -338,15 +338,18 @@ void queueAppend(queue *queue_, client *newValue){
 }
 
 //remove o elemento de baixo da queue
-void queuePop(queue *queue_){
+client* queuePop(queue *queue_){
     if(queue_->atualSize > 0){
+        queue_->atualSize -= 1;
         if(queue_->start + 1 > queue_->maxSize){
             queue_->start = 0;
+            return &queue_->array[queue_->maxSize];
         }else{
             queue_->start += 1;
+            return &queue_->array[queue_->start];
         }
-        queue_->atualSize -= 1;
     }
+    return NULL;
 }
 
 //imprime informações da queue
@@ -430,6 +433,78 @@ report createWaitQueue(queue *queue_, sortedDoublyLinkedList* list){
     return todayReport;
 }
 
+void nextBuffet(queue *waitQueue, queue *hQueue, queue *dQueue, queue *nQueue){
+    client *nextClient = queuePop(waitQueue);
+    if(nextClient == NULL){
+        printf("Nao ha mais clientes na fila de espera!\n");
+    }else if(strcmp(nextClient->condition, "H") == 0){
+        if(hQueue->atualSize < hQueue->maxSize){
+            queueAppend(hQueue, nextClient);
+            printf("(%s) Cliente adicionado a fila de hipertensos!\n", nextClient->name);
+        }else{
+            printf("Nao ha espaco na fila de hipertensos!\n");
+        }
+    }else if(strcmp(nextClient->condition, "D") == 0){
+        if(dQueue->atualSize < dQueue->maxSize){
+            queueAppend(dQueue, nextClient);
+            printf("(%s) Cliente adicionado a fila de diabeticos!\n", nextClient->name);
+        }else{
+            printf("Nao ha espaco na fila de diabeticos!\n");
+        }
+    }else{
+        if(nQueue->atualSize < nQueue->maxSize){
+            queueAppend(nQueue, nextClient);
+            printf("(%s) Cliente adicionado a fila de saudaveis!\n", nextClient->name);
+        }else{
+            printf("Nao ha espaco na fila de saudaveis!\n");
+        }
+    }
+}
+
+void exitBuffet(queue *hQueue, queue *dQueue, queue *nQueue){
+    char dName[61];
+    char hName[61];
+    char nName[61];
+    if(dQueue->atualSize == 0){
+        strcpy(dName, "Nenhum cliente");
+    }else{
+        strcpy(dName, dQueue->array[dQueue->start].name);
+    }
+    if(hQueue->atualSize == 0){
+        strcpy(hName, "Nenhum cliente");
+    }else{
+        strcpy(hName, hQueue->array[hQueue->start].name);
+    }
+    if(nQueue->atualSize == 0){
+        strcpy(nName, "Nenhum cliente");
+    }else{
+        strcpy(nName, nQueue->array[nQueue->start].name);
+    }
+    printf("(1) fila diabetico (%s)\n", dName);
+    printf("(2) fila hipertenso (%s)\n", hName);
+    printf("(3) fila saudavel (%s)\n", nName);
+    printf("Qual dos clientes esta saindo? ");
+    int selectedOption = 0;
+    scanf("%d", &selectedOption);
+    switch(selectedOption){
+        case 1:
+            queuePop(dQueue);
+            printf("%s removido da fila!\n", dName);
+            break;
+        case 2:
+            queuePop(hQueue);
+            printf("%s removido da fila!\n", hName);
+            break;
+        case 3:
+            queuePop(nQueue);
+            printf("%s removido da fila!\n", nName);
+            break;
+        default:
+            printf("opcao invalida\n");
+            break;
+    }
+}
+
 void generateReport(report todayReport){
     int todayDay = 0;
     int todayMonth = 0;
@@ -469,7 +544,7 @@ int main(){
         printf("(1) Realizar novo cadastro\n");
         printf("(2) Buscar cadastro\n");
         printf("(3) Alterar dados do cadastro\n");
-        printf("(4) Montar fila de espera\n"); //realizar a leitura de DadosChegada.txt, verificar quais clientes irão para fila de espera, quais entrarão imediatamente no restaurante e quais não serão servidos
+        printf("(4) Montar fila de espera\n");
         printf("(5) Proximo a ir ao buffet\n"); //tirar uma pessoa da fila de espera e colocá-la na fila do buffet correspondente à sua condição de saúde (se houver espaço no restaurante)
         printf("(6) Sair do restaurante\n"); //quando um cliente deixa o restaurante, avisar qual cliente está saindo e atualizar a fila repectiva
         printf("(7) Imprimir fila D\n");
@@ -497,8 +572,10 @@ int main(){
                 todayReport = createWaitQueue(waitQueue, registers);
                 break;
             case 5:
+                nextBuffet(waitQueue, hQueue, dQueue, nQueue);
                 break;
             case 6:
+                exitBuffet(hQueue, dQueue, nQueue);
                 break;
             case 7:
                 printQueue(dQueue, "fila de diabeticos");
@@ -531,7 +608,7 @@ int main(){
                 return 0;
                 break;
             default:
-                printf("comando inválido\n");
+                printf("opcao invalida\n");
                 break;
         }
         printf("\n");
